@@ -1,23 +1,23 @@
 # appinetwork
-An R package for construction and Analysis of Protein-Protein Interactions (PPI) NETWORKS for complexes and biological processes
+An R package for constructing and Analysing of Protein-Protein Interactions (PPI) NETWORKs for complexes and biological processes
 
 
 ## Installation
 
-To install this package from git, you will need the devtools package :
+To install this package from git, you need the devtools package using the following command in R :
 
     install.packages("devtools")
     library("devtools")
     
-Now we can install our package from Github using the following line:
+Now you can install our package from Github using the following command in R :
 
     devtools::install_github("melinagallopin/appinetwork")
 
 You need the version R 3.2.0+. If you do not have the latest version of R installed, it should work as long as you install the dependencies first with
-the following block of code:
+the following commands in R:
 
     install.packages( pkgs = c("R.methodsS3","rPython","stringr"), dependencies = TRUE)
 
 ## Examples
 
-This package only implements a function `interface()` which ... 
+This package implements a function `interface()` which ...  Put a link to the vignette, userguide
