@@ -1,0 +1,7 @@
+export(interface)
+#export(thesaurus_window)
+import(gWidgets2)
+import(gWidgets2tcltk)
+import(tcltk)
+import(ape)
+#exportPattern("^[[:alpha:]]+")
