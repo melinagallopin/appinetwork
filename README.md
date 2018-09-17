@@ -20,4 +20,4 @@ the following commands in R:
 
 ## Examples
 
-This package implements a function `interface()` which ...  Put a link to the vignette, userguide ....blablabalbalb
+This package implements a function `interface()` which ...  Put a link to the vignette, userguide ...
