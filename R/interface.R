@@ -2,7 +2,7 @@ interface <- function() {
 
 	mainpath <- getwd()
 	f_pos <- c(1000, 500)
-
+  ## NEW COMMENT
 	# Main navigation window allowing the access to the different package's options
 	mainpanel <<- gwindow("PPI interface" , parent = f_pos, visible = F)
 	g <- ggroup(container = mainpanel, horizontal = F)
