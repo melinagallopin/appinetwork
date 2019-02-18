@@ -211,7 +211,7 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 				# Recherche des interactions directes pour les proteines de l'input list
 				cat('\n\n>Search for first degree interactions')
 				PPI.Direct <- recup_ppi(input.uniprotID, selected.database3)
-
+				PPI.Direct[!duplicated(PPI.Direct[,c(1:4,6,11:12)]),]
 				# Verification de la presence d'interactions
 				if (dim(PPI.Direct)[1] == 0) {
 					cat("\n\nWARNING : No interaction found\nProcesuss stop")
@@ -226,8 +226,6 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 				# Recherches du nombre d'article par interaction
 				unredundant <- pubmed_id(PPI.Direct, os,1)
 				PPI.Direct <- unredundant
-				cat('\n')
-
 				# Si le reseau demande est de degre 2 on relance une recherche d'interactions
 				if (inter.type == "second-degree") {
 					# Recuperation des uniprot-ID de toutes les proteines du reseau de degre 1
@@ -251,6 +249,8 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 					else {
 						PPI.Indirect <- PPI.Direct2
 					}
+					PPI.Indirect<-unique(PPI.Indirect)
+					PPI.Indirect[!duplicated(PPI.Indirect[,c(1:4,6,11:12)]),]
 					cat('\n>Search for PUBMED IDS for each interaction')
 					
 					# Recherches du nombre d'article par interaction

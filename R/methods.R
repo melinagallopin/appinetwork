@@ -310,10 +310,6 @@ pubmed_id <- function(Final.List.Redondant, Name, run) {
       }
       i = i + 1
       nbl <- nbl + 1
-      
-      cat("i :")
-      print(i)
-      cat("\n")
       if(run==2)
         setTxtProgressBar(pb, i)
     }
