@@ -97,13 +97,11 @@ assembly_intermediary_window <- function(f_pos, mainpanel) {
 				# Recuperation des donnees
 				network2cluter <- load_network(network)
 				inputListFileName <- load_inputlist(inputlist)
-
 				inputName <- inputListFileName[,1]
 				inputID<- inputListFileName[,2]
 				listProt <- unique(rbind(as.matrix(network2cluter[,4]), as.matrix(network2cluter[,5])))
-
 				unredundant.direct <- network2cluter
-
+				
 				# Making the proximity score matrix
 				cat("\n\n>Organism : ", organism)
 				cat("\n>SCORE : ", score)
@@ -112,15 +110,17 @@ assembly_intermediary_window <- function(f_pos, mainpanel) {
 				mat <- matrix(nrow = length(inputID), ncol = length(inputID), dimnames = list(inputID, inputID))
 				N <- length(inputID)
 				allProt <- union(unredundant.direct[,4], unredundant.direct[,5])
-				for (i in 1:(N - 1)) {
+				cat("inputID[N] : ")
+				for (i in 1:N) {
 					listProti <- unique(c(as.vector(unredundant.direct[unredundant.direct[,4] == as.vector(inputID[i]),5]), as.vector(unredundant.direct[unredundant.direct[,5] == as.vector(inputID[i]),4])))
-					for (j in (i + 1):N) {
-						listProtj <- unique(c(as.vector(unredundant.direct[unredundant.direct[,4] == as.vector(inputID[j]),5]), as.vector(unredundant.direct[unredundant.direct[,5] == as.vector(inputID[j]),4])))
-						mat[i,j] <- proximity_score(listProti, listProtj, inputID, allProt, score)
-						mat[j,i] <- mat[i,j]
+					for (j in 1:N) {
+					  if(i!=j){
+					    listProtj <- unique(c(as.vector(unredundant.direct[unredundant.direct[,4] == as.vector(inputID[j]),5]), as.vector(unredundant.direct[unredundant.direct[,5] == as.vector(inputID[j]),4])))
+					    mat[i,j] <- proximity_score(listProti, listProtj, inputID, allProt, score)
+					  }
 					}
 				}
-
+        
 				# Warning message if a protein has no interaction with the others
 				for (i in 1:N) {
 					if (colSums(mat, na.rm = TRUE)[i] == 0) {

@@ -226,7 +226,6 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 				# Recherches du nombre d'article par interaction
 				unredundant <- pubmed_id(PPI.Direct, os,1)
 				PPI.Direct <- unredundant
-
 				cat('\n')
 
 				# Si le reseau demande est de degre 2 on relance une recherche d'interactions
@@ -252,7 +251,8 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 					else {
 						PPI.Indirect <- PPI.Direct2
 					}
-
+					cat('\n>Search for PUBMED IDS for each interaction')
+					
 					# Recherches du nombre d'article par interaction
 					unredundant <- pubmed_id(PPI.Indirect, os,2)
 					PPI.Indirect<-unredundant
@@ -282,12 +282,14 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 				cat('\n>Removing redundants ...\n')
 				network<-DataBases(network)
 				selected.database3 <- remove_redundants(network)
-				network <<- as.matrix(selected.database3)
+				network <- as.matrix(selected.database3)
+
 				# Remove self-interactant
 				if (r.s.i == 'yes'){
 					cat('\n>Removing self-interactants  ...\n')
-					network <<- network[as.vector(network[,4]) != as.vector(network[,5]),]
-					cat('OK')
+					network <- network[network[,4]!=network[,5],]
+					network <<- network
+				  cat(' OK')
 				}
 				else {
 					cat('\n>Proteins which interact with itselves are kept')
@@ -297,56 +299,58 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 
 
 				# Correction automatique du reseau avec le thesaurus : on met l'uniprot-ID principal pour chaque proteine (a la place des anciens)
-				not_founds <- c()
 				data <- as.matrix(network)
 				thesaurus <- read.table(file = th, header = TRUE, quote = "", sep = "\t" , stringsAsFactors = F)
 				# Visualisation de la progression des corrections
 				cat ( '\n>Autocorrection' )
 				cat ( '\n' )
-				pb1 <- txtProgressBar(min = 0, max = dim(data)[1], style = 3)
-	
+				pb1 <<- txtProgressBar(min = 0, max = dim(data)[1], style = 3)
+				nbpassage<<-0
+				nf<<-c()
+				apply(data,1,cherche_uniprotID,data=data,thesaurus=thesaurus)
+				not_founds<-nf
 				  # Parcours de toutes les interactions du reseau
-				for (i in 1:dim(data)[1]) {
-					# Recherche de l'uniprot ID de reference et association du bon nom de proteine et de gene
+#				for (i in 1:dim(data)[1]) {
+				# Recherche de l'uniprot ID de reference et association du bon nom de proteine et de gene
 					# Colonne A
-				  resultatA <- search_id(data[i,4], thesaurus)
-					if (length(resultatA) == 3) {
-					  ID <- resultatA[1]
-						Proteine <- resultatA[2]
-						Gene <- resultatA[3]
-						data[i,4] <- ID
-						data[i,1] <- Proteine
-						data[i,11] <- Gene
-					}
-				  v1<-c(grep(data[i,11],data[,11]))
-				  v2<-c(grep(data[i,11],data[,12]))
-				  if((length(unique(c(data[v1,4],data[v2,5])))>1)||(length(resultatA) != 3))
-					{
+#				  resultatA <- search_id(data[i,4], thesaurus)
+#					if (length(resultatA) == 3) {
+#					  ID <- resultatA[1]
+#						Proteine <- resultatA[2]
+#						Gene <- resultatA[3]
+#						data[i,4] <- ID
+#						data[i,1] <- Proteine
+#						data[i,11] <- Gene
+#					}
+#				  v1<-c(grep(data[i,11],data[,11]))
+#				  v2<-c(grep(data[i,11],data[,12]))
+#				  if((length(unique(c(data[v1,4],data[v2,5])))>1)||(length(resultatA) != 3))
+#					{
 					# On recupere les identifiants que le thesaurus ne sait pas remplacer tout seul
-					  not_found <- data[i,c(4,1,11)]
-					  not_founds <- rbind(not_founds, not_found)
-					}
+#					  not_found <- data[i,c(4,1,11)]
+#					  not_founds <- rbind(not_founds, not_found)
+#					}
 					# Colonne B
-				  resultatB <- search_id(data[i,5], thesaurus)
-					if (length(resultatB) == 3) {
-					  ID <- resultatB[1]
-						Proteine <- resultatB[2]
-						Gene <- resultatB[3]
-						
-						data[i,5] <- ID
-						data[i,3] <- Proteine
-						data[i,12] <- Gene
-					}
-				  v3<-c(grep(data[i,12],data[,11]))
-				  v4<-c(grep(data[i,12],data[,12]))
-				  if((length(unique(c(data[v3,4],data[v4,5])))>1)||(length(resultatB) != 3))
-					{
+#				  resultatB <- search_id(data[i,5], thesaurus)
+#					if (length(resultatB) == 3) {
+#					  ID <- resultatB[1]
+#						Proteine <- resultatB[2]
+#						Gene <- resultatB[3]
+#						
+#						data[i,5] <- ID
+#						data[i,3] <- Proteine
+#						data[i,12] <- Gene
+#					}
+#				  v3<-c(grep(data[i,12],data[,11]))
+#				  v4<-c(grep(data[i,12],data[,12]))
+#				  if((length(unique(c(data[v3,4],data[v4,5])))>1)||(length(resultatB) != 3))
+#					{
 					# On recupere les identifiants que le thesaurus ne sait pas remplacer tout seul
-					  not_found <- data[i,c(5,3,12)]
-						not_founds <- rbind(not_founds, not_found)
-					}
-					setTxtProgressBar(pb1, i)
-				}#end for
+#					  not_found <- data[i,c(5,3,12)]
+#						not_founds <- rbind(not_founds, not_found)
+#					}
+#					setTxtProgressBar(pb1, i)
+#				}#end for
 				
 				
 				# Memorisation du nouveau reseau (correction avec le thesaurus)
@@ -354,7 +358,7 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 
 				### Toutes les corrections automatiques sont faites sur le reseau ###
 
-
+        
 				# On recupere les identifiants que le thesaurus n'a pas trouves
 				not_founds <<- unique(not_founds)
 				

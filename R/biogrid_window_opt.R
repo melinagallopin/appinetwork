@@ -162,17 +162,18 @@ biogrid_window2 <- function(f_pos, mainpanel, pana, mainpath) {
                 irefindex[,7] <- paste("pubmed:", irefindex[,7], sep = '')
 
                 # eliminate transposons
-
                 thesaurusNotranNoPut<-thesaurus[thesaurus[,6]=="FALSE",]
-                Tab.transposons<-thesaurus[thesaurus[,6]==" TRUE",]
-                Tab.transposons[,2]<-unlist(apply(Tab.transposons,c(1,2), strsplit,split=";")[,2])
-                for (i in 1:dim(Tab.transposons)[1]){
+                  
+                if(length(thesaurus[thesaurus[,6]==" TRUE",6])>0){
+                  Tab.transposons<-thesaurus[thesaurus[,6]==" TRUE",]
+                  Tab.transposons[,2]<-unlist(apply(Tab.transposons,c(1,2), strsplit,split=";")[,2])
+                  for (i in 1:dim(Tab.transposons)[1]){
                     if(length(grep(Tab.transposons[i,2],irefindex[,1]))>0)
-                    irefindex<-irefindex[-grep(Tab.transposons[i,2],irefindex[,1]),]
+                      irefindex<-irefindex[-grep(Tab.transposons[i,2],irefindex[,1]),]
                     if(length(grep(Tab.transposons[i,2],irefindex[,2]))>0)
-                    irefindex<-irefindex[-grep(Tab.transposons[i,2],irefindex[,2]),]
+                      irefindex<-irefindex[-grep(Tab.transposons[i,2],irefindex[,2]),]
+                  }
                 }
-
                 # eliminate putative proteins
                 if (putative == " TRUE") {
                     thesaurusNotranNoPut<-thesaurusNotranNoPut[thesaurusNotranNoPut[,5]=="FALSE",]

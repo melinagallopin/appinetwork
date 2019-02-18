@@ -76,8 +76,6 @@ branch_length <- function(matrix, set1, set2) {
 
 }
 
-
-
 # Search all the databases having the same PPI coming from one or several publications 
 
 DataBases<-function(Final.List.Redondant){
@@ -238,8 +236,8 @@ recup_ppi <- function(inputListFile, Base) {
 pubmed_id <- function(Final.List.Redondant, Name, run) {
   
   cat('\n>Searching pubmed IDs ... ')
-  
-  
+  print(dim(Final.List.Redondant))
+  cat("\n")
   
   # Recuperation des donnees du reseau
   Inter.red <- as.matrix(Final.List.Redondant)
@@ -248,8 +246,7 @@ pubmed_id <- function(Final.List.Redondant, Name, run) {
     Inter.partialRed <- t(Inter.partialRed)
   }
   if(run==2)
-    pb <- txtProgressBar(style = 3)
-  
+    pb <- txtProgressBar(min = 0, max = dim(Inter.red)[1],style = 3)
   # Parcours du reseau pour trouver des interactions redondantes et identifier le nombres d'articles associes (nombre de pubmed ID)
   l <- dim(Inter.red)[1]
   i <- 1
@@ -314,14 +311,16 @@ pubmed_id <- function(Final.List.Redondant, Name, run) {
       i = i + 1
       nbl <- nbl + 1
       
+      cat("i :")
+      print(i)
+      cat("\n")
       if(run==2)
         setTxtProgressBar(pb, i)
     }
+    Inter.partialRed <- Inter.partialRed[-1,]
     if(run==2)
       close(pb)
-    Inter.partialRed <- Inter.partialRed[-1,]
   }
-  
   cat('OK')
   
   return(unredundant)
@@ -519,7 +518,6 @@ load_inputlist <- function(data) {
   
   cat('OK dim :')
   cat(dim(unique(multiple.database)))
-  
   return(unique(multiple.database))
   
 }
@@ -845,7 +843,7 @@ finish <- function(network, network2, r.s.i, r.u.l, UpDate, selected.database4, 
   # Remove self-interactant
   if (r.s.i == 'yes') {
     cat('\n>Removing self-interactants ... ')
-    network2 <<- network2[as.vector(network2[,4]) != as.vector(network2[,5]),]
+    network2 <<- network2[network2[,4] != network2[,5],]
     cat('OK')
   }
   else {
@@ -959,4 +957,47 @@ update_db <- function(db, resume, os, Os, organism.path) {
   
 }
 
+# fonction de recherche de l'uniprot ID de reference et association du bon nom de proteine et de gene
+cherche_uniprotID<-function(data_i,data,thesaurus){
+  # Colonne A
+  resultatA <- search_id(data_i[4],thesaurus)
+  if (length(resultatA) == 3) {
+    ID <- resultatA[1]
+    Proteine <- resultatA[2]
+    Gene <- resultatA[3]
+    data_i[4] <- ID
+    data_i[1] <- Proteine
+    data_i[11] <- Gene
+  }
+  v1<-c(grep(data_i[11],data[,11]))
+  v2<-c(grep(data_i[11],data[,12]))
+  if((length(unique(c(data[v1,4],data[v2,5])))>1)||(length(resultatA) != 3))
+  {
+    # On recupere les identifiants que le thesaurus ne sait pas remplacer tout seul
+    not_found <- data_i[c(4,1,11)]
+    nf<<-rbind(nf, not_found)
+  }
+  
+  # Colonne B
+  resultatB <- search_id(data_i[5], thesaurus)
+  if (length(resultatB) == 3) {
+    ID <- resultatB[1]
+    Proteine <- resultatB[2]
+    Gene <- resultatB[3]
+    
+    data_i[5] <- ID
+    data_i[3] <- Proteine
+    data_i[12] <- Gene
+  }
+  v3<-c(grep(data_i[12],data[,11]))
+  v4<-c(grep(data_i[12],data[,12]))
+  if((length(unique(c(data[v3,4],data[v4,5])))>1)||(length(resultatB) != 3))
+  {
+    # On recupere les identifiants que le thesaurus ne sait pas remplacer tout seul
+    not_found <- data_i[c(5,3,12)]
+    nf <<- rbind(nf, not_found)
+  }
+  nbpassage<<-nbpassage+1
+  setTxtProgressBar(pb1, nbpassage)
+}
 

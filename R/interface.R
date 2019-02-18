@@ -1,3 +1,4 @@
+## MODIF
 interface <- function() {
 
 	mainpath <- getwd()
