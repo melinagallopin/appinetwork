@@ -3,16 +3,23 @@ Type: Package
 Title: construction and Analysis of Protein-Protein Interactions (PPI)
         networks for complexes and biological processes
 Version: 0.1.0
-Author: Marie-Hélène Mucchielli-Giorgi <marie-helene.mucchielli@i2bc.paris-saclay.fr> [aut],
-    Annie Glatigny [ctb]
-Maintainer: Marie-Hélène Mucchielli-Giorgi <marie-helene.mucchielli@i2bc.paris-saclay.fr>
 Description: This package is used to construct and analyse a network about PPI in cellular complexes or biological processes.
     There are functions to parse files, to construct network, to modelize assembly intermediary of complexes and to cluster network (TFit).
     Parse Databases : IrefIndex, Biogrid, Intact.
     Construct Thesaurus.
     Build Network.
     Analyse Network : Assembly intermediary + TFit clustering to find all interactants.
+Author: Marie-Hélène Mucchielli-Giorgi <marie-helene.mucchielli@i2bc.paris-saclay.fr> [aut],
+    Annie Glatigny [ctb], Benjamin Auder <Benjamin.Auder@u-psud.fr> [ctb], Melina Gallopin <Melina.Gallopin@u-psud.fr> [ctb]
+Maintainer: Marie-Hélène Mucchielli-Giorgi <marie-helene.mucchielli@i2bc.paris-saclay.fr>
+Depends:
+    R (>= 3.0.0), gWidgets2, gWidgets2tcltk, tcltk, ape
+Imports:
+    MASS
+Suggests:
+    roxygen2,
+    testthat
 URL: http://www.i2bc.paris-saclay.fr/?lang=en
-Depends: gWidgets2, gWidgets2tcltk, tcltk, ape
 License: CC0
 Encoding: UTF-8
+RoxygenNote: 5.0.1
