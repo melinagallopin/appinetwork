@@ -9,7 +9,7 @@
 #'   Option moins simple : récupérer une sortie structurée sans passer par un fichier .clas
 #'
 #' @export
-tfit <- function(X)
+tfit <- function(X, out)
 {
-  out = .Call("tfit", X, PACKAGE = "appinetwork")
+  out = .Call("tfit", X, out, PACKAGE = "appinetwork")
 }

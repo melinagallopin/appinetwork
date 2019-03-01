@@ -98,7 +98,7 @@ clustering_tfit_window <- function(f_pos, mainpanel, panb, mainpath) {
 			  write.table(int_number, file = paste(saveTFit.path, '/graph.gr', sep = ''), row.names = F, quote = F, col.names = F, sep = " ")
 			  write.table(network[,c(1,3)], file = paste(saveTFit.path, '/graph.gr', sep = ''), row.names = F, quote = F, col.names = F, sep = " ", append = TRUE)
 			  File.clas <- paste(saveTFit.path, '/class.clas', sep = '')
-			  File.gr <-  paste(saveTFit.path, '/graph.gr', sep = '')
+			  File.gr <-  paste(saveTFit.path, '/graph', sep = '')
 				setwd(mainpath)
 
 				visible(mainpanel) <<- T
@@ -110,7 +110,7 @@ clustering_tfit_window <- function(f_pos, mainpanel, panb, mainpath) {
 			cat('\n>Running TFit...')
 			
 			# Appel de la fonction tfit
-			tfit(File.gr) ##################################################
+			tfit(File.gr, File.clas) ##################################################
 			
 			cat("OK\n\n>Clustering TFit is done.\n")
 			cat(paste('\n>Results are stocked in : ', saveTFit.path))

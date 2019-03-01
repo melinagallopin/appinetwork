@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
+#include <unistd.h>
 
 #define MaxV 1500		// Nb. max de sommets
 #define SupCar 21		// Nb. max de caracteres pour une etiquette
@@ -21,12 +22,12 @@ int		MCV=0, FuStyl=0;	// MVC=1 ssi recherche des affectations multiples ; FuStyl
 Methode de Transfert-Fusion iteree
 */
 
-static int compar(const char *e1, const char *e2) 
-{	return strcmp(e1,e2); }
+static int compar(const void *e1, const void *e2) 
+{	return strcmp((char*)e1,(char*)e2); }
 
 
 void EditGraph()
-{   int i,j,k;
+{   int i,j;
 
 	printf("Graphe\n");
     	for (i=0; i<N; i++)
@@ -54,8 +55,8 @@ void ClasOut()
 /*	Edite les classes a partir d'un vecteur de numeros de classe Part[]
 	Calcule la modularite et le taux d'ar?tes intraclasses 
 */
-{   int		i, j, j1, j2, k, kk=0, k1, k2, Aint, TotAint, DgInt, card, flag=1, sing;
-	double	Mod, SumMod, MMod, ExpDen, Gain, SumGain=0., Dens, SumDens=0.;
+{   int		i, j1, j2, k, k1, k2, Aint, TotAint, DgInt, card, flag=1, sing;
+	double ExpDen, Gain, SumGain=0., Dens, SumDens=0.;
 
 	for (k=0; k<=NbClas; k++) Kard[k]=0;
 	for (i=0; i<N; i++) Kard[Part[i]]++;
@@ -103,8 +104,8 @@ void ClasOut()
 }
 
 void LecGraph(char* X)
-{	int		i,ii, j,jj, k, flag, NL;
-	char	MaxCar=0, Ch1[2*SupCar],Ch2[2*SupCar],OldCh[SupCar]="", typ=0, car='N';
+{	int		i, ii, j, jj, flag, NL;
+	char	MaxCar=0, Ch1[2*SupCar],Ch2[2*SupCar],OldCh[SupCar]="", car='N';
 	float	seuil;
 /*	Lit le graphe, dans la table binaire T
 	Calcule les degr?s Dg[] et la somme des carr?s des degr?s SumDg2
@@ -119,6 +120,10 @@ void LecGraph(char* X)
 	//	printf("Graphe pondere (O) ou non pondere (N) "); car=getchar();
 	if (car=='N') strcat(FichE,".gr"); else if (car=='O') strcat(FichE,".grp");
     printf("%s\n",FichE);
+char aqw[512];
+getcwd(aqw, 512);
+    printf("%s\n",aqw);
+
     FichCar = fopen(FichE,"r");
     assert(FichCar != NULL);
     
@@ -200,7 +205,7 @@ void LecGraph(char* X)
 
 void MatrixMod(float alpha)
 /* Calcule la matrice des pond?rations des paires */
-{	int		i, j, k;
+{	int		i, j;
 	double	SumMax, ModTot, ModMax;
 	
 	/* On Evalue les sommes en chaque sommet */
@@ -231,7 +236,7 @@ void MatrixMod(float alpha)
 }
 
 int Louv1()
-{	int		i,ii, j, k, flag=1, fflag=0, NbTrans=0, OldC, NewC;
+{	int		i, j, k, flag=1, fflag=0, NbTrans=0, OldC, NewC;
 	float	VarMax;
 
 // Calcul de la contribution de chaque element a chaque classe
@@ -270,7 +275,7 @@ int Louv1()
 
 void Renum()
 /*	Renum?rote les classes et Calcule la modularite */
-{   int		i, j, j1, j2, k, kk=0, k1, k2, card;
+{   int		i, j1, j2, k, kk=0, k1, k2, card;
 	double	Mod, SumMod, MMod;
 	
 	for (k=0; k<=NbClas; k++) Kard[k]=0;
@@ -355,7 +360,7 @@ int Louv2()
 
 
 int TFit()
-{	int		i, NbPas=0, flag, fflag=1;
+{	int		i, NbPas=0, fflag=1;
 	
 	for (i=0; i<N; i++) Part[i]=i+1;
 	NbClas=N;
@@ -450,7 +455,7 @@ double Score()
 }
 
 void Around()
-{	int		i, j, ij, k=0, kmax, es=0, NbC, cl, NbEs=N, NbTrans;
+{	int		i, j, ij, k=0, kmax, es=0, NbC, NbEs=N, NbTrans;
 	double	ScIni, Sc;
 
 //	NbTrans=Transfert(); 
@@ -482,17 +487,17 @@ void Around()
 	return;
 }
 
-void SaveClas(char* FichS, char* out)
-{   int		i, j, k, kk=0, Kmin=0;
+void SaveClas(char* FichS)
+{   int		i, k, kk=0, Kmin=0;
     char    car;
 
-	printf("Do you want to create a .clas file (Y or N) ");
-	fflush(stdin); car=getchar(); printf("\n");
+	//printf("Do you want to create a .clas file (Y or N) ");
+	//fflush(stdin); car=getchar(); printf("\n");
+	car = 'Y';	
 	if (car == 'N' || car =='n') return;
-	printf("Minimum cardinality of selected classes (0=all) ");
-	scanf("%d",&Kmin);
-
-	strcat(FichS,"out.clas"); //TODO............. io paths not global, more general.....
+	//printf("Minimum cardinality of selected classes (0=all) ");
+	//scanf("%d",&Kmin);
+	Kmin = 0;	
 	FichClas = fopen(FichS,"w"); assert(FichClas != NULL);
 	
 	for (k=0; k<=NbClas; k++) Kard[k]=0;
@@ -509,15 +514,13 @@ void SaveClas(char* FichS, char* out)
 	}	fprintf(FichClas,"\n\n");
 	fclose(FichClas);
 
-	strcpy(out, FichS);
     return;
 }
 
 int tfit_core(char* X, char* out) //X = chemin vers fichier... / out: fichier .clas
 
-{   int     i, j,j1,j2, k,k1,k2, ii,jj,kk, flag, fflag=0, ess, clas, card, OldC, NewC, iter, NbPas=0, ClasMax; 
-	float	val, Vmax, VarMax;
-	double	SumMax, ModTot, ModMax;
+{   int     i, j,  NbPas=0, ClasMax; 
+	float	val;
     
 
 /*  calcule une partition qui optimise un critere de modularite 
@@ -565,9 +568,10 @@ int tfit_core(char* X, char* out) //X = chemin vers fichier... / out: fichier .c
 	printf("Classes after stochastic transfers\n\n");
 	ClasOut(); ClasMax=NbClas;
 
-	SaveClas(X,out);
+	SaveClas(out);
 	
 	printf("C'est fini\n");
+	free(Dg);
 }
 
 
