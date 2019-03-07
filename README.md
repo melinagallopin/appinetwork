@@ -21,3 +21,5 @@ the following commands in R:
 ## Examples
 
 This package implements a function `interface()` which ...  Put a link to the vignette, userguide ...
+
+Currently, the final function `tfit` to cluster the network of second degree physical interactions does not work using the interface. We have to use the function  `tfit()` directly in command line. 
