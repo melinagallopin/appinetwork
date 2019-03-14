@@ -1,3 +1,43 @@
+clustering_tfit <- function(organism, network) {
+  
+  mainpath <- getwd()
+  
+  cat("\n\n>CLUSTERING : TFIT\n")
+  
+  # Lecture des donnees
+  tab <- load_network(network)
+  network <- as.matrix(tab)
+  int_number <- dim(network)[1]
+  
+  # Creation des dossiers de sauvegarde
+  setwd(mainpath)
+  organism <- gsub(" ", "-", organism)
+  organism.path <- paste(mainpath, organism, sep = '/')
+  dir.create(organism.path, showWarnings = FALSE)  
+  analyze.path <- paste(organism.path, "Analyzes", sep = '/')
+  dir.create(analyze.path, showWarnings = FALSE)  
+  saveTFit.path <- paste(analyze.path, '/TFit', sep = '')
+  dir.create(saveTFit.path, showWarnings = FALSE)
+  
+  # Generation d'un fichier contenant les paires de proteines en interaction dans le reseau analyse
+  write.table(int_number, file = paste(saveTFit.path, '/graph.gr', sep = ''), row.names = F, quote = F, col.names = F, sep = " ")
+  write.table(network[,c(1,3)], file = paste(saveTFit.path, '/graph.gr', sep = ''), row.names = F, quote = F, col.names = F, sep = " ", append = TRUE)
+  File.clas <- paste(saveTFit.path, '/class.clas', sep = '')
+  File.gr <-  paste(saveTFit.path, '/graph.gr', sep = '')
+  setwd(mainpath)
+  
+  # run TFitW
+  cat('\n>Running TFit...')
+  
+  # Appel de la fonction tfit
+  #tfitc("graph\nY\nall") ##################################################
+  
+  cat("OK\n\n>Clustering TFit is done.\n")
+  cat(paste('\n>Results are stocked in : ', saveTFit.path))
+  setwd(mainpath)
+  
+}
+
 clustering_tfit_window <- function(f_pos, mainpanel, panb, mainpath) {
 
 	network <- c()
@@ -44,78 +84,45 @@ clustering_tfit_window <- function(f_pos, mainpanel, panb, mainpath) {
 			mainpath <- getwd()
 
 			cat("\n\n>CLUSTERING : TFIT\n")
-			
+
 			if (organism == "Other") {
-
-				panelorganism <- gwindow("Organism description", parent = f_pos, visible = F, expand = T)
-	
-				pc <- ggroup(container = panelorganism, horizontal = F, use.scrollwindow = T)
-				pcsb <- ggroup(container = pc, horizontal = F, use.scrollwindow = F)
-				lg <- gvbox(container = pcsb)
-				fllg <- gformlayout(container = lg)
-
-				organismName <- gedit(initial.msg = 'Organism Name', label = "NAME", container = fllg)
-
-				visible(panelorganism)  <- T
- 
-				bpc <- ggroup(container = pc); addSpring(bpc)
-
-				# 1 : Autre organism
-				bouton1 <- gbutton("OK", handler = function(h,...) {
-					# Rassemblement des modifications a apporter
-					org.name <- cbind(names(svalue(fllg)), svalue(fllg))
-					org.name <- data.frame(org.name, row.names = NULL)
-
-					org <- cbind(org.name)
-					colnames(org) <-  c('Organism_name')
-
-					organism <- as.character(org[1,2])
-
-					clustering_tfit_othero(organism, network, mainpath)
-
+			  panelorganism <- gwindow("Organism description", parent = f_pos, visible = F, expand = T)
+			  
+			  pc <- ggroup(container = panelorganism, horizontal = F, use.scrollwindow = T)
+			  pcsb <- ggroup(container = pc, horizontal = F, use.scrollwindow = F)
+			  lg <- gvbox(container = pcsb)
+			  fllg <- gformlayout(container = lg)
+			  
+			  organismName <- gedit(initial.msg = 'Organism Name', label = "NAME", container = fllg)
+			  
+			  visible(panelorganism)  <- T
+			  
+			  bpc <- ggroup(container = pc); addSpring(bpc)
+			  
+			  # 1 : Autre organism
+			  bouton1 <- gbutton("OK", handler = function(h,...) {
+			    # Rassemblement des modifications a apporter
+			    org.name <- cbind(names(svalue(fllg)), svalue(fllg))
+			    org.name <- data.frame(org.name, row.names = NULL)
+			    
+			    org <- cbind(org.name)
+			    colnames(org) <-  c('Organism_name')
+			    
+			    organism <- as.character(org[1,2])
+			    setwd(mainpath)
+			    visible(mainpanel) <<- T
+			    clustering_tfit(organism, network)
 					dispose(bpc)		
 				}, container = bpc)
 
 			}
 
-			else {
 			# Parametres : organism,network
-			  tab <- load_network(network)
-			  network <- as.matrix(tab)
-			  int_number <- dim(network)[1]
-			  
-			  # Creation des dossiers de sauvegarde
+			else{
 			  setwd(mainpath)
-			  organism <- gsub(" ", "-", organism)
-			  organism.path <- paste(mainpath, organism, sep = '/')
-			  dir.create(organism.path, showWarnings = FALSE)  
-			  analyze.path <- paste(organism.path, "Analyzes", sep = '/')
-			  dir.create(analyze.path, showWarnings = FALSE)  
-			  saveTFit.path <- paste(analyze.path, '/TFit', sep = '')
-			  dir.create(saveTFit.path, showWarnings = FALSE)
-			  
-			  # Generation d'un fichier contenant les paires de proteines en interaction dans le reseau analyse
-			  write.table(int_number, file = paste(saveTFit.path, '/graph.gr', sep = ''), row.names = F, quote = F, col.names = F, sep = " ")
-			  write.table(network[,c(1,3)], file = paste(saveTFit.path, '/graph.gr', sep = ''), row.names = F, quote = F, col.names = F, sep = " ", append = TRUE)
-			  File.clas <- paste(saveTFit.path, '/class.clas', sep = '')
-			  File.gr <-  paste(saveTFit.path, '/graph', sep = '')
-				setwd(mainpath)
-
-				visible(mainpanel) <<- T
-
+			  visible(mainpanel) <<- T
+			  clustering_tfit(organism, network)
 			}
-
-			########################### Execution de la fonction #################################
-			######################################################################################
-			cat('\n>Running TFit...')
-			
-			# Appel de la fonction tfit
-			tfit(File.gr, File.clas) ##################################################
-			
-			cat("OK\n\n>Clustering TFit is done.\n")
-			cat(paste('\n>Results are stocked in : ', saveTFit.path))
-			setwd(mainpath)
-			
 			dispose(panel_para)
 			dispose(ppb)
 
@@ -150,4 +157,6 @@ clustering_tfit_window <- function(f_pos, mainpanel, panb, mainpath) {
 	visible(panel_para) <- T
 
 }
+
+
 

@@ -1,3 +1,48 @@
+thesaurus_othero <- function(organism, uniprot, sequence, mainpath) {
+  
+  cat(paste("\n\nOrganism", organism, sep = " : "))
+  cat(paste("\nUniprot file", uniprot, sep = " : "))
+  
+  cat("\n\n>THESAURUS CONSTRUCTION ... ")
+  
+  # Creation du dossier correspondant a l'organisme
+  organism <- gsub(" ", "-", organism)
+  organisme <- gsub("-", "+", organism)
+  organisme <- tolower(organisme)
+  
+  organism.path <- paste(mainpath, organism, sep = '/')
+  dir.create(organism.path, showWarnings = FALSE)
+  
+  sequences <- paste(sequence, "sequences", sep = '-')
+  nomsortie <- paste("Thesaurus", "_", organism, "_", sequences, ".txt", sep = '')
+  sortie <- paste(organism.path, nomsortie, sep = '/')
+  
+  setwd(organism.path)
+  
+  # Construction du thesaurus
+  path <- paste(system.file(package = "appinetwork"), "python/thesaurusPy.py", sep = "/")
+  file.copy(path, mainpath)
+  path.copy <- paste(mainpath, "thesaurusPy.py", sep = "/")
+  
+  setwd(mainpath)
+  setwd("inst")
+  command <- paste("python", "thesaurusPy.py", uniprot, sortie, organisme, sep = " ")
+  system(command)
+  setwd(mainpath)
+  
+  file.remove(path.copy)
+  
+  cat("OK\n>Thesaurus construction is done.")
+  cat(paste("\nThesaurus file (output)", sortie, sep = " : "))
+  cat(paste("\n\n"))
+  
+  setwd(mainpath)
+  
+  visible(mainpanel) <- T
+  
+}
+
+
 thesaurus_window <- function(f_pos, mainpanel, mainpath) {
 
 	uniprot <- c()

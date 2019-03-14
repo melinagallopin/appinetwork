@@ -1,3 +1,168 @@
+rechercheDansThesaurus<-function(i,thesaurus_j,biogridA,biogridB,putative){
+  uniprotthesaurus <- unlist(strsplit(thesaurus_j[2], ";"))
+  for (u in 1:length(uniprotthesaurus)) {
+  if(length(grep(biogridA,uniprotthesaurus[u]))>0 & length(grep(biogridB,uniprotthesaurus[u]))>0){
+        
+    # Recherche pour la proteine A
+    if (biogridA == irefindex2[i,1] && biogridA == uniprotthesaurus[u]) {
+      irefindex2[i,1] <- thesaurus_j[1]
+      # Insertion des noms de proteine et de gene
+      irefindex2[i,3] <- thesaurus_j[3]
+      irefindex2[i,14] <- thesaurus_j[4]
+      # Recherche des transposons
+      if (thesaurus_j[6] == "TRUE") {
+        identifiant <- paste("Transposon", irefindex2[i,1], sep = ":")
+        irefindex2[i,1] <- gsub(irefindex2[i,1], identifiant, irefindex2[i,1])
+        nomprot <- paste("Transposon", irefindex2[i,3], sep = ":")
+        irefindex2[i,3] <- gsub(irefindex2[i,3], nomprot, irefindex2[i,3])
+      }
+    # Recherche des proteines putative
+      if (putative == "FALSE") {
+        if (thesaurus_j[5] == "TRUE") {
+          identifiant <- paste("Putative", irefindex2[i,1], sep = ":")
+          irefindex2[i,1] <- gsub(irefindex2[i,1], identifiant, irefindex2[i,1])
+          nomprot <- paste("Putative", irefindex2[i,3], sep = ":")
+          irefindex2[i,3] <- gsub(irefindex2[i,3], nomprot, irefindex2[i,3])
+        }
+      }
+    }
+    # Recherche pour la proteine B
+    if (biogridB == irefindex2[i,2] && biogridB == uniprotthesaurus[u]) {
+      irefindex2[i,2] <- thesaurus_j[1]
+      # Insertion des noms de proteine et de gene
+      irefindex2[i,4] <- thesaurus_j[3]
+      irefindex2[i,15] <- thesaurus_j[4]
+      # Recherche des transposons
+      if (thesaurus_j[6] == "TRUE") {
+        identifiant <- paste("Transposon", irefindex2[i,2], sep = ":")
+        irefindex2[i,2] <- gsub(irefindex2[i,2], identifiant, irefindex2[i,2])
+        nomprot <- paste("Transposon", irefindex2[i,4], sep = ":")
+        irefindex2[i,4] <- gsub(irefindex2[i,4], nomprot, irefindex2[i,4])
+      }
+      # Recherche des proteines putative
+      if (putative == "FALSE") {
+        if (thesaurus_j[5] == "TRUE") {
+          identifiant <- paste("Putative", irefindex2[i,2], sep = ":")
+          irefindex2[i,2] <- gsub(irefindex2[i,2], identifiant, irefindex2[i,2])
+          nomprot <- paste("Putative", irefindex2[i,4], sep = ":")
+          irefindex2[i,4] <- gsub(irefindex2[i,4], nomprot, irefindex2[i,4])
+        }
+      }
+    }
+  } 
+  }  
+}
+
+
+biogrid_othero <- function(organism, organismID, putative, file, uniprot, pathracine) {
+  
+  cat("\n\n>FORMATING BIOGRID DATABASE")
+  
+  # Creation du dossier correspondant a l'organisme
+  organism <- gsub(" ", "-", organism)
+  organisme <- gsub("-", "+", organism)
+  organisme <- tolower(organisme)
+  
+  organism.path <- paste(pathracine, organism, sep = '/')
+  dir.create(organism.path, showWarnings = FALSE)
+  
+  uniprotfile <- uniprot
+  nomsortie <- paste("ThesaurusBiogrid", "_", organism, ".txt", sep = '')
+  sortie <- paste(organism.path, nomsortie, sep = '/')
+  
+  # Construction du thesaurus
+  cat("\n\n>Thesaurus construction ... ")
+  path <- paste(system.file(package = "appinetwork"), "biogridPy.py", sep = "/")
+  file.copy(path, pathracine)
+  path.copy <- paste(pathracine, "biogridPy.py", sep = "/")
+  
+  command <- paste("python", "biogridPy.py", uniprotfile, sortie, putative, sep = " ")
+  system(command)
+  
+  file.remove(path.copy)
+  
+  # Lecture du thesaurus
+  thesaurus <- read.delim(file = sortie, header = T, sep = "\t")
+  thesaurus <- as.matrix(thesaurus)
+  file.remove(sortie)
+  
+  cat("OK\n>Loading database ... ")
+  
+  # Lecture de la base
+  biogridfile <- file
+  Biogrid <- read.delim(file = biogridfile, header = T, sep = "\t")
+  
+  if (dim(Biogrid)[2] != 24) {
+    cat(paste("\nIncorrect data dimension, read help(biogrid) for more informations"))
+    stop()
+  }
+  
+  numParticipants <- rep(2, dim(Biogrid)[1])
+  
+  irefIndex <- cbind(Biogrid[,2], Biogrid[,3], Biogrid[,8], Biogrid[,9], Biogrid[,12], Biogrid[,14], Biogrid[,15], Biogrid[,16], Biogrid[,17], Biogrid[,13], Biogrid[,24], Biogrid[,19], numParticipants, Biogrid[,8], Biogrid[,9])
+  colnames(irefIndex) <- c("uidA", "uidB", "aliasA", "aliasB", "method", "author", "pmids", "taxa", "taxb", "interactionType", "sourceDB", "confidence", "numParticipants", "GeneNameA", "GeneNameB")
+  irefindex <- as.matrix(irefIndex)
+  
+  cat("OK")
+  cat("\n>Formatting database : ")
+  cat(paste(dim(Biogrid)[1]))
+  cat(" lines in database\n")
+  
+  # Remplacement des Id biogrid par les uniprot et suppression des interactions non souhaitees
+  prsbar <- txtProgressBar(min = 1, max = dim(Biogrid)[1], style = 3)
+  N <- dim(irefindex)[1]
+  for (i in 1:N) {
+    # Verification de l'organisme
+    organism <- gsub("-", " ", organism)
+    if (organismID == irefindex[i,8] && organismID == irefindex[i,9]) {
+      irefindex[i,8] <- paste("taxid:", organismID, "(", organism, ")", sep = '')
+      irefindex[i,9] <- paste("taxid:", organismID, "(", organism, ")", sep = '')
+      irefindex[i,7] <- paste("pubmed:", irefindex[i,7], sep = '')
+    }
+    
+    irefindex[i,5] <- paste("", as.character(Biogrid[i,12]), sep = '')
+    irefindex[i,6] <- paste("", as.character(Biogrid[i,14]), sep = '')
+    irefindex[i,10] <- paste("", as.character(Biogrid[i,13]), sep = '')
+    irefindex[i,11] <- paste("", as.character(Biogrid[i,24]), sep = '')
+    irefindex[i,12] <- paste("", as.character(Biogrid[i,19]), sep = '')
+    
+    # Remplacement de l'identifiant
+    biogridA <- irefindex[i,1]
+    biogridB <- irefindex[i,2]
+    irefindex2<<-irefindex
+    apply(thesaurus,1,rechercheDansThesaurus,i=i,biogridA=biogridA,biogridB=biogridB,putative=putative)
+    irefindex<-irefindex2
+    rm(irefindex2)
+    if (irefindex[i,1] == biogridA) {
+      irefindex[i,1] <- paste("Protein", biogridA, sep = ":")
+      irefindex[i,3] <- paste("Protein", irefindex[i,3], sep = ":")
+    }
+    if (irefindex[i,2] == biogridB) {
+      irefindex[i,2] <- paste("Protein", biogridB, sep = ":")
+      irefindex[i,4] <- paste("Protein", irefindex[i,4], sep = ":")
+    }
+    setTxtProgressBar(prsbar, i)
+  }
+  
+  cat("\n>Saving database ... ")
+  
+  setwd(organism.path)
+  database.path <- paste(organism.path, "Databases", sep = '/')
+  dir.create(database.path, showWarnings = FALSE)
+  setwd(database.path)
+  
+  organism <- gsub(" ", "-", organism)
+  outfilename <- paste(organism, "_biogrid.txt", sep = "")
+  write.table(irefindex, file = outfilename, row.names = F, col.names = T, quote = F, sep = "\t")
+  
+  cat(paste("OK\n\n>Formating biogrid database is done.\n\nDatabase file is saved in", database.path, sep = " : "))
+  cat(paste("\n\n"))
+  setwd(pathracine)
+  
+  visible(mainpanel) <- T
+  
+}
+
 biogrid_window2 <- function(f_pos, mainpanel, pana, mainpath) {
     file <- c()
     uniprot <- c()
