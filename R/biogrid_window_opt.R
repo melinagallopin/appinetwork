@@ -93,7 +93,7 @@ biogrid_othero <- function(organism, organismID, putative, file, uniprot, pathra
   Biogrid <- read.delim(file = biogridfile, header = T, sep = "\t")
   
   if (dim(Biogrid)[2] != 24) {
-    cat(paste("\nIncorrect data dimension, read help(biogrid) for more informations"))
+    cat(paste("\nIncorrect data dimension, read userguide for more informations"))
     stop()
   }
   
@@ -168,7 +168,7 @@ biogrid_window2 <- function(f_pos, mainpanel, pana, mainpath) {
     uniprot <- c()
     return.parameter <- c()
 
-    panel_para <- gwindow("Biogrid database file formatting : help(biogrid)", parent = f_pos, visible = T)
+    panel_para <- gwindow("Biogrid database file formatting :", parent = f_pos, visible = T)
     pp <- gvbox(container = panel_para)
 
     flyt <- gformlayout(container = pp, expand = TRUE)
@@ -296,7 +296,7 @@ biogrid_window2 <- function(f_pos, mainpanel, pana, mainpath) {
 
 
                 if (dim(Biogrid)[2] != 24) {
-                    cat(paste("\nIncorrect data dimension, read help(biogrid) for more informations"))
+                    cat(paste("\nIncorrect data dimension, read userguide for more informations"))
                     stop()
                 }
                 Biogrid<-as.matrix(Biogrid)
