@@ -102,7 +102,7 @@ irefindex_window <- function(f_pos, mainpanel, pana, mainpath) {
 				cat("OK")
 
 				if (dim(Base)[2] != 54) {
-					cat(paste("\nIncorrect data dimension, read help(irefindex) for more informations"))
+					cat(paste("\nIncorrect data dimension, read userguide for more informations"))
 					stop()
 				}
 

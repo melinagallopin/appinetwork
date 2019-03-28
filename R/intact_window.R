@@ -9,7 +9,7 @@ intact_othero <- function(organism, organismID, file, pathracine) {
   intact <- read.delim(file = intactFileName, header = T, sep = "\t")
   
   if (dim(intact)[2] != 15) {
-    cat(paste("\nIncorrect data dimension, read help(intact) for more informations"))
+    cat(paste("\nIncorrect data dimension, read userguide for more informations"))
     stop()
   }
   
@@ -169,7 +169,7 @@ intact_window <- function(f_pos, mainpanel, pana, mainpath) {
 	file <- c()
 	return.parameter <- c()
 
-	panel_para <- gwindow("Intact database file formatting : help(intact)", parent = f_pos, visible = T)
+	panel_para <- gwindow("Intact database file formatting : ", parent = f_pos, visible = T)
 	pp <- gvbox(container = panel_para)
 	pp$set_borderwidth(10L)
 

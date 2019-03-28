@@ -43,7 +43,7 @@ clustering_tfit_window <- function(f_pos, mainpanel, panb, mainpath) {
 	network <- c()
 	return.parameter <- c()
 
-	panel_para <- gwindow("TFit : help(clustering_tfit)", parent = f_pos, visible = T)
+	panel_para <- gwindow("TFit :", parent = f_pos, visible = T)
 	pp <- gvbox(container = panel_para)
 	pp$set_borderwidth(10L)
 

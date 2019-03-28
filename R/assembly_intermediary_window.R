@@ -173,7 +173,7 @@ assembly_intermediary_window <- function(f_pos, mainpanel) {
 	inputlist <- c()
 	return.parameter <- c()
 
-	panel_para <- gwindow("Assembly intermediaries : help(assembly_intermediary)", parent = f_pos, width = '500', height = '200', visible = T)
+	panel_para <- gwindow("Assembly intermediaries : ", parent = f_pos, width = '500', height = '200', visible = T)
 	pp <- gvbox(container = panel_para)
 
 	flyt <- gformlayout(container = pp, expand = TRUE)

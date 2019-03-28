@@ -338,7 +338,7 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 	ipl <- c()
 	th <- c()
 
-	panel_para <- gwindow("Build network : help(build_network)", parent = f_pos, visible = T)
+	panel_para <- gwindow("Build network : ", parent = f_pos, visible = T)
 	pp <- gvbox(container = panel_para)
 	pp$set_borderwidth(10L)
 
