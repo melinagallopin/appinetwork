@@ -13,7 +13,7 @@ Author: Marie-Hélène Mucchielli-Giorgi <marie-helene.mucchielli@i2bc.paris-sac
     Annie Glatigny [ctb], Benjamin Auder <Benjamin.Auder@u-psud.fr> [ctb], Melina Gallopin <Melina.Gallopin@u-psud.fr> [ctb]
 Maintainer: Marie-Hélène Mucchielli-Giorgi <marie-helene.mucchielli@i2bc.paris-saclay.fr>
 Depends:
-    R (>= 3.0.0), gWidgets2, gWidgets2tcltk, tcltk, ape
+    R (>= 3.0.0), gWidgets2, gWidgets2tcltk, tcltk, ape, digest
 Imports:
     MASS
 Suggests:
