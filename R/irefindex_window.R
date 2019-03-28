@@ -3,7 +3,7 @@ irefindex_window <- function(f_pos, mainpanel, pana, mainpath) {
 	file <- c()
 	return.parameter <- c()
 
-	panel_para <- gwindow("IrefIndex database file formatting", parent = f_pos, visible = T)
+	panel_para <- gwindow("iRefIndex database file formatting", parent = f_pos, visible = T)
 	pp <- gvbox(container = panel_para)
 
 	flyt <- gformlayout(container = pp, expand = TRUE)
@@ -15,20 +15,20 @@ irefindex_window <- function(f_pos, mainpanel, pana, mainpath) {
 	# File section
 	chdb <- ggroup(container = pp, horizontale = T)
 	addSpring(chdb)
-	bouton1 <- gbutton("Irefindex file", container = chdb, handler = function(...) {
+	bouton1 <- gbutton("iRefIndex file", container = chdb, handler = function(...) {
 		file <<- gfile(text = "Select a file", type = "open", multi = F, container = chdb)
 		if (is.null(file) == T) {
 			gmessage('Selected file is null', icon = 'error')
 		}
 		if (is.null(file) == F) {
-			bouton1$set_value(paste(length(file), 'irefindex file selected'))
+			bouton1$set_value(paste(length(file), 'iRefIndex file selected'))
 			#cat(paste('\n>File selected : ', file, sep = ''))
 		}
 	})
 
 	ppb <- ggroup(container = pp)
 	addSpring(ppb)
-	gbutton("Formate file", handler = function(h,...) {
+	gbutton("Format file", handler = function(h,...) {
 
 		return.parameter <<- svalue(flyt)
 		visible(panel_para) <- F
@@ -37,7 +37,7 @@ irefindex_window <- function(f_pos, mainpanel, pana, mainpath) {
 		complex <- as.character(return.parameter[2])
 
 
-		# Parse and formate
+		# Parse and format
 		if (is.null(file) == F) {
 
 			mainpath <- getwd()
@@ -85,12 +85,12 @@ irefindex_window <- function(f_pos, mainpanel, pana, mainpath) {
 				}
 
 				cat(paste("\nOrganism", organisme, sep = " : "))
-				cat(paste("\nIrefIndex file", file, sep = " : "))
+				cat(paste("\niRefIndex file", file, sep = " : "))
 				cat(paste("\n"))
 
 				while (!file.exists(file)) {
 					cat("\n\t-> incorrect database name ! try again\n")
-					file <- readline("\t> Type the name of the IrefIndex data set file that you want to parse : ")
+					file <- readline("\t> Type the name of the iRefIndex data set file that you want to parse : ")
 				}
 	
 				irefindexfile <- file
@@ -287,7 +287,7 @@ irefindex_window <- function(f_pos, mainpanel, pana, mainpath) {
 					write.table(database.output, file = paste(database.output.name, "txt", sep = "."), row.names = F, col.names = T, quote = F, sep = "\t")
 				}
 	
-				cat(paste("OK\n>Formating irefindex database is done.\n\nDatabase files are saved in", database.path, sep = " : "))
+				cat(paste("OK\n>Formating iRefIndex database is done.\n\nDatabase files are saved in", database.path, sep = " : "))
 				cat(paste("\n\n"))
 		
 				setwd(mainpath)

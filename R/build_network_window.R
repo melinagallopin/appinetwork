@@ -239,7 +239,7 @@ build_network_othero <- function(organism, db, ipl, th, method, degree, remove.s
     not.found.ID <- as.matrix(NF)
     
     # Mise en place de la fenetre d'affichage des corrections
-    panelcorrection <- gwindow("Manuel correction panel", parent = f_pos, visible = F, expand = T)
+    panelcorrection <- gwindow("Manual correction panel", parent = f_pos, visible = F, expand = T)
     
     pc <- ggroup(container = panelcorrection, horizontal = F, use.scrollwindow = T)
     pcsb <- ggroup(container = pc, horizontal = T, use.scrollwindow = F)
@@ -702,7 +702,7 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 				  not.found.ID <- as.matrix(NF)
 	
   				# Mise en place de la fenetre d'affichage des corrections
-	  			panelcorrection <- gwindow("Manuel correction panel", parent = f_pos, visible = F, expand = T)
+	  			panelcorrection <- gwindow("Manual correction panel", parent = f_pos, visible = F, expand = T)
 	
 		  		pc <- ggroup(container = panelcorrection, horizontal = F, use.scrollwindow = T)
 			  	pcsb <- ggroup(container = pc, horizontal = T, use.scrollwindow = F)

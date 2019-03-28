@@ -14,7 +14,7 @@ clustering_tfit <- function(organism, network) {
   organism <- gsub(" ", "-", organism)
   organism.path <- paste(mainpath, organism, sep = '/')
   dir.create(organism.path, showWarnings = FALSE)  
-  analyze.path <- paste(organism.path, "Analyzes", sep = '/')
+  analyze.path <- paste(organism.path, "Analysis", sep = '/')
   dir.create(analyze.path, showWarnings = FALSE)  
   saveTFit.path <- paste(analyze.path, '/TFit', sep = '')
   dir.create(saveTFit.path, showWarnings = FALSE)
@@ -23,14 +23,14 @@ clustering_tfit <- function(organism, network) {
   write.table(int_number, file = paste(saveTFit.path, '/graph.gr', sep = ''), row.names = F, quote = F, col.names = F, sep = " ")
   write.table(network[,c(1,3)], file = paste(saveTFit.path, '/graph.gr', sep = ''), row.names = F, quote = F, col.names = F, sep = " ", append = TRUE)
   File.clas <- paste(saveTFit.path, '/class.clas', sep = '')
-  File.gr <-  paste(saveTFit.path, '/graph.gr', sep = '')
+  File.gr <-  paste(saveTFit.path, '/graph', sep = '')
   setwd(mainpath)
   
   # run TFitW
   cat('\n>Running TFit...')
   
   # Appel de la fonction tfit
-  #tfitc("graph\nY\nall") ##################################################
+  tfit(File.gr,File.clas) ##################################################
   
   cat("OK\n\n>Clustering TFit is done.\n")
   cat(paste('\n>Results are stocked in : ', saveTFit.path))

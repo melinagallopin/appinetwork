@@ -5,11 +5,11 @@ interface <- function() {
 	f_pos <- c(1000, 500)
   ## NEW COMMENT
 	# Main navigation window allowing the access to the different package's options
-	mainpanel <<- gwindow("PPI interface" , parent = f_pos, visible = F)
+	mainpanel <<- gwindow("appinetwork interface" , parent = f_pos, visible = F)
 	g <- ggroup(container = mainpanel, horizontal = F)
 
-    # Construction of an ID correspondence file for a selected organism
-	bouton0 <- gbutton("Construct an ID corespondence file", container = g, handler = function(...) {
+    # Construction an ID correspondence file for a selected organism
+	bouton0 <- gbutton("Construct an ID correspondence file", container = g, handler = function(...) {
 		visible(mainpanel) <- F
 		thesaurus_window(f_pos, mainpanel, mainpath)
 
@@ -23,7 +23,7 @@ interface <- function() {
 		pag <- ggroup(container = pana, horizontal = F)
 
 		# Irefindex database
-		bouton1 <- gbutton("IrefIndex", container = pag, handler = function(...) {
+		bouton1 <- gbutton("iRefIndex", container = pag, handler = function(...) {
 			visible(pana) <- F
 			irefindex_window(f_pos, mainpanel, pana, mainpath)
 		})
