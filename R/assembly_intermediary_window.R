@@ -50,8 +50,8 @@ find_intermediaries <- function(organism, score, network, inputlist, pathracine)
   organism <- gsub(" ", "-", organism)
   dir.create(organism, showWarnings = FALSE)
   setwd(organism)
-  dir.create("Analyzes", showWarnings = FALSE)
-  setwd("Analyzes")
+  dir.create("Analysis", showWarnings = FALSE)
+  setwd("Analysis")
   dir.create("Assembly_intermediaries", showWarnings = FALSE)
   setwd("Assembly_intermediaries")
   dir.create(score, showWarnings = FALSE)
@@ -162,7 +162,7 @@ find_intermediaries <- function(organism, score, network, inputlist, pathracine)
   setwd(pathracine)
   
   cat("OK\n\n>Potential assembly intermediaries modelization is done.\n")
-  cat("\n\nResults are saved in : ", pathracine, "/", organism, "/Analyzes/Assembly_intermediaries\n\n")
+  cat("\n\nResults are saved in : ", pathracine, "/", organism, "/Analysis/Assembly_intermediaries\n\n")
   
   visible(mainpanel) <<- T
 }
