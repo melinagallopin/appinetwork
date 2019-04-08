@@ -375,7 +375,7 @@ biogrid_window2 <- function(f_pos, mainpanel, pana, mainpath) {
                 setwd(database.path)
 
                 organism <- gsub(" ", "-", organism)
-                outfilename <- paste(organism, "_biogrid.txt")
+                outfilename <- paste(organism, "_biogrid.txt",sep="")
                 write.table(irefindex, file = outfilename, row.names = F, col.names = T, quote = F, sep = "\t")
 
                 cat(paste("OK\n\n>Formating biogrid database is done.\n\nDatabase file is saved in", database.path, sep = " : "))
