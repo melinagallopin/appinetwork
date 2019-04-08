@@ -700,7 +700,13 @@ saving_window <- function(network2, network.path, Os, r.i, r.s.i, r.u.l, not_fou
   out.put.name <- gfile('Save the network', type = "save", initial.dir = network.path, initial.filename = paste(ex.type, Cor, OS, inter.type, 'interactions.txt', sep = '_'))
   network2<-remove_redundants(network2)
   write.table(network2, file = out.put.name, row.names = F, col.names = T, quote = F, sep = "\t")
-  
+  unique(c(as.vector(network2[,11]),as.vector(network2[,12])))->noeuds
+  network2[,11:13]->liens
+  g <- graph_from_data_frame(liens, directed=FALSE, vertices=noeuds)
+  plot(g,vertex.label.cex=0.7,vertex.size=10)
+  pdf(paste(network.path,"Network.pdf",sep="/"))
+  plot(g,vertex.label.cex=0.7,vertex.size=10)
+  dev.off()
   setwd(network.path)
   
   cat('OK\nNetwork : ')
