@@ -17,14 +17,21 @@ You need the version R 3.2.0+. If you do not have the latest version of R instal
 the following commands in R:
 
     install.packages( pkgs = c("R.methodsS3","rPython","stringr"), dependencies = TRUE)
+    
+You can copy paste the following R commands all at once :
+
+
+    install.packages("devtools")
+    library("devtools")
+    install.packages( pkgs = c("R.methodsS3","rPython","stringr"), dependencies = TRUE)
+    devtools::install_github("melinagallopin/appinetwork")
 
 ## Examples
 
-This package implements a function `interface()` which ...  Put a link to the vignette, userguide ...
+This package implements a function `interface()` which enables to format PPI databses and performs two mains analysis : model complexes assembly intermediaries and cluster PPI networks. The step by step procedure is described here : [userguide](https://github.com/melinagallopin/data/blob/master/userguide.pdf)
 
 Currently, the final function `tfit` to cluster the network of second degree physical interactions does not work using the interface. We have to use the function  `tfit()` directly in command line. 
 
-Try.
 
 ## Formatting database and PPI network analysis 
 
