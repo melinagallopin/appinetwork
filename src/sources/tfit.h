@@ -4,4 +4,4 @@
 #include <assert.h>
 #include <math.h>
 
-int tfit_core(char* X, char* out); //X = chemin vers fichier... / out: fichier .clas
+int tfit_core(const char* X, const char* out); //X = chemin vers fichier... / out: fichier .clas

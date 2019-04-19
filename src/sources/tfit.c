@@ -103,7 +103,7 @@ void ClasOut()
     return;
 }
 
-void LecGraph(char* X)
+void LecGraph(const char* X)
 {	int		i, ii, j, jj, flag, NL;
 	char	MaxCar=0, Ch1[2*SupCar],Ch2[2*SupCar],OldCh[SupCar]="", car='N';
 	float	seuil;
@@ -487,7 +487,7 @@ void Around()
 	return;
 }
 
-void SaveClas(char* FichS)
+void SaveClas(const char* FichS)
 {   int		i, k, kk=0, Kmin=0;
     char    car;
 
@@ -517,7 +517,7 @@ void SaveClas(char* FichS)
     return;
 }
 
-int tfit_core(char* X, char* out) //X = chemin vers fichier... / out: fichier .clas
+void tfit_core(const char* X, const char* out) //X = chemin vers fichier... / out: fichier .clas
 
 {   int     i, j,  NbPas=0, ClasMax; 
 	float	val;

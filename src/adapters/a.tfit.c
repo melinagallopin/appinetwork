@@ -8,8 +8,8 @@ SEXP tfit(
 	SEXP out_
 ) {
 	// TODO: io...
-	char* X = CHAR(STRING_PTR(X_)[0]);
-	char* out = CHAR(STRING_PTR(out_)[0]);
+	const char* X = CHAR(STRING_PTR(X_)[0]);
+	const char* out = CHAR(STRING_PTR(out_)[0]);
 
 	////////////////////
 	// Call to function //
