@@ -2,5 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-.[o|a]
+.o
+.a
 .so
+.rds
