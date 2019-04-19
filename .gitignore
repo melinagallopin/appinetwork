@@ -2,7 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
-.o
-.a
-.so
-.rds
+*.[o|a]
+*.a
+*.so
+*.rds
+#test folder (TODO: commit it ?!)
+/test/
