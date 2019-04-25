@@ -27,24 +27,11 @@ void EditGraph()
   printf("Graphe\n");
   for (i=0; i<N; i++)
   {
-    printf("%*s %3d : ",-NbCar,Et[i],Dg[i]); 
+    printf("%*s %3d : ",-NbCar,Et[i],Dg[i]);
     for (j=0; j<N; j++)
       printf("%1d ", T[i][j]);
     printf("\n");
   }
-}
-
-void VueVar()
-{
-  int k, kk;
-  for (k=1; k<=NbClas; k++)
-  {
-    printf("%2d : ",k);
-    for (kk=1; kk<=NbClas; kk++)
-      printf("%7.0f ", Var[k][kk]);
-    printf("\n");
-  }
-  printf("\n");
 }
 
 // Edite les classes a partir d'un vecteur de numeros de classe Part[]
