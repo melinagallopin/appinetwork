@@ -28,6 +28,17 @@ typedef struct Partition
   int NbClas; //nombre de classes
 } Partition;
 
+Partition* AllocPartition(int N)
+{
+  Partition* p;
+  short* Clas = malloc((N+1) * sizeof(short)); //classe de chaque element
+  short* Part = malloc(N * sizeof(short)); //partition courante
+  p->Clas = Clas;
+  p->Part = Part;
+  p->NbClas = N;
+  return p;
+}
+
 // Edite les classes a partir d'un vecteur de numeros de classe Part[]
 // Calcule la modularite et le taux d'arêtes intraclasses
 void ClasOut(const Graph* g, Partition* p)
@@ -35,7 +46,8 @@ void ClasOut(const Graph* g, Partition* p)
   int i, j1, j2, k, k1, k2, Aint, TotAint, DgInt, card, sing;
   double ExpDen, Gain, SumGain=0., Dens, SumDens=0.;
 
-  short* Kard = malloc((g->N+1) * sizeof(short));    // Nb. d'elements dans les classes courantes
+  // Nb. d'elements dans les classes courantes
+  short* Kard = malloc((g->N+1) * sizeof(short));
   for (k=0; k<=p->NbClas; k++)
     Kard[k]=0;
   for (i=0; i<g->N; i++)
@@ -246,64 +258,65 @@ Graph* LecGraph(const char* X)
 }
 
 // Calcule la matrice des pondérations des paires
-float*** MatrixMod(float alpha, int N)
+float*** MatrixMod(float alpha, const Graph* g)
 {
-  int i, j;
-  double  SumMax, ModTot, ModMax;
-  float* Sum = malloc(N * sizeof(float));      // Somme des poids des aretes en chaque sommet
-
-  float** A = malloc(N * sizeof(float *));    // Graphe pondere
-  float** B = malloc(N * sizeof(float *));    // Matrice des modularites
-  float** Var = malloc(N * sizeof(float *));  // Variation en cas de fusion
-  for (i=0; i<N; i++)
+  int N = g->N;
+  float** A = malloc(N * sizeof(float *)); //graphe pondéré
+  float** B = malloc(N * sizeof(float *)); //matrice des modularités
+  float** Var = malloc(N * sizeof(float *)); //variation en cas de fusion
+  for (int i=0; i<N; i++)
   {
-    A[i] = malloc ( N * sizeof(float) );
-    B[i] = malloc ( N * sizeof(float) );
-    Var[i] = malloc ( (N+1) * sizeof(float) );
-    Var[i][i]=0.;
-    A[i][i]=0.;
+    A[i] = malloc (N * sizeof(float));
+    B[i] = malloc (N * sizeof(float));
+    Var[i] = malloc ((N+1) * sizeof(float));
+    Var[i][i] = 0.;
+    A[i][i] = 0.;
   }
-  // Le graphe donné ponderé par 1
-  for (i=1; i<N; i++)
+  // Le graphe donné ponderé par 1 (TODO: ???)
+  for (int i=1; i<N; i++)
   {
-    for (j=0; j<i; j++)
+    for (int j=0; j<i; j++)
     {
-      float val = (T[i][j] ? 1. : 0.);
+      float val = (g->T[i][j] ? 1. : 0.);
       A[i][j]=val;
       A[j][i]=val;
     }
   }
 
   // On évalue les sommes en chaque sommet
-  SumMax=0.;
-  for (i=0; i<N; i++)
+  double SumMax=0.;
+  // Somme des poids des aretes en chaque sommet:
+  float* Sum = malloc(N * sizeof(float));
+  for (int i=0; i<N; i++)
   {
     Sum[i]=0.;
     B[i][i]=0.;
-    for (j=0; j<N; j++)
+    for (int j=0; j<N; j++)
     {
       if (A[i][j]>0.)
         Sum[i]=Sum[i]+A[i][j];
     }
-    SumMax=SumMax+Sum[i];
+    SumMax += Sum[i];
   }
-  
+
   //  Matrice B
-  ModTot=0.;
-  ModMax=0.;
-  SumMax=SumMax/1.;
-  for (i=1; i<N; i++)
+  double ModTot=0.;
+  double ModMax=0.;
+  SumMax /= 1.; //TODO: ???
+  for (int i=1; i<N; i++)
   {
-    for (j=0; j<i; j++)
+    for (int j=0; j<i; j++)
     {
-      B[i][j]=alpha*SumMax*A[i][j]-Sum[i]*Sum[j]/alpha; // ma formule
-      // B[i][j]=(1+alpha)*SumMax*A[i][j]-Sum[i]*Sum[j]-alpha*SumMax; // celle de Fred
-      // B[i][j]=(1+alpha)*SumMax*A[i][j]-alpha*SumMax; // new Fred
+      B[i][j]=alpha*SumMax*A[i][j]-Sum[i]*Sum[j]/alpha; //ma formule
+      // B[i][j]=(1+alpha)*SumMax*A[i][j]-Sum[i]*Sum[j]-alpha*SumMax; //celle de Fred
+      // B[i][j]=(1+alpha)*SumMax*A[i][j]-alpha*SumMax; //new Fred
       B[j][i]=B[i][j];
-      ModTot=ModTot+B[i][j];
-      if (A[i][j]>0.)
-        ModMax=ModMax+B[i][j];
-      A[j][i]=0.;  // La partie supérieure droite marquera à 1 les paires d'éléments réunis dans au moins une classe
+      ModTot += B[i][j];
+      if (A[i][j] > 0.)
+        ModMax += B[i][j];
+      // La partie supérieure droite marquera à 1 les paires d'éléments
+      // réunis dans au moins une classe.
+      A[j][i] = 0.;
     }
   }
   free(Sum);
@@ -314,99 +327,94 @@ float*** MatrixMod(float alpha, int N)
   return res;
 }
 
-int Louv1(const float** B, float** Var, Partition* p)
+int Louv1(const float** B, float** Var, int N, Partition* p)
 {
-  int i, j, k, flag=1, fflag=0, NbTrans=0, OldC, NewC;
-  float  VarMax;
-
   // Calcul de la contribution de chaque element a chaque classe
-  for (i=0; i<N; i++)
+  for (int i=0; i<N; i++)
   {
-    for (k=1; k<=p->NbClas; k++)
-      Var[i][k]=0.;
-    for (j=0; j<N; j++)
+    for (int k=1; k<=p->NbClas; k++)
+      Var[i][k] = 0.;
+    for (int j=0; j<N; j++)
     {
-      k=Part[j];
-      Var[i][k]=Var[i][k]+B[i][j];
+      int k = p->Part[j];
+      Var[i][k] += B[i][j];
     }
   }
 
-  // fflag=1 si au moins 1 transfert dans cet appel de la procédure
-  while(flag>0)
+  // fflag = 1 si au moins 1 transfert dans cet appel de la procédure
+  int flag = 1;
+  int fflag = 0;
+  while (flag>0)
   {
-    flag=0;  // transfert dans cette boucle
-    for (i=0; i<N; i++)
+    flag = 0;  //transfert dans cette boucle
+    for (int i=0; i<N; i++)
     {
-      OldC=Part[i];
-      VarMax=Var[i][OldC];
-      NewC=0;
-      for (k=1; k<=p->NbClas; k++)
+      int OldC = Part[i];
+      float VarMax = Var[i][OldC];
+      int NewC = 0;
+      for (int k=1; k <= p->NbClas; k++)
       {
-        if (Var[i][k]>VarMax)
+        if (Var[i][k] > VarMax)
         {
-          VarMax=Var[i][k];
-          NewC=k;
+          VarMax = Var[i][k];
+          NewC = k;
         }
       }
-      if (NewC>0 || VarMax<0.)
-      {
-        flag=1;
-        fflag=1;
-      }
-      else
+      if (NewC <= 0 && VarMax >= 0.)
         continue;
-      NbTrans++;
-      for (j=0; j<N; j++)
-        Var[j][OldC]=Var[j][OldC]-B[j][i];
-      if (VarMax<0.)
+      flag = 1;
+      fflag = 1;
+      for (int j=0; j<N; j++)
+        Var[j][OldC] -= B[j][i];
+      if (VarMax < 0.)
       {
         p->NbClas++;
-        NewC=p->NbClas;
-        for (j=0; j<N; j++)
-          Var[j][NewC]=0.;
+        NewC = p->NbClas;
+        for (int j=0; j<N; j++)
+          Var[j][NewC] = 0.;
       }
-      Part[i]=NewC;
-      for (j=0; j<N; j++)
-        Var[j][NewC]=Var[j][NewC]+B[j][i];
+      Part[i] = NewC;
+      for (int j=0; j<N; j++)
+        Var[j][NewC] += B[j][i];
     }
   }
   return fflag;
 }
 
 // Renumérote les classes
-void Renum(const float** B, Partition* p)
+void Renum(const float** B, int N, Partition* p)
 {
-  int i, j1, j2, k, kk=0, k1, k2, card;
-
-  short* Kard = malloc((g->N+1) * sizeof(short));    // Nb. d'elements dans les classes courantes
-  for (k=0; k<=p->NbClas; k++)
-    Kard[k]=0;
-  for (i=0; i<N; i++)
+  // Nb. d'elements dans les classes courantes:
+  short* Kard = malloc((N+1) * sizeof(short));
+  for (int k=0; k <= p->NbClas; k++)
+    Kard[k] = 0;
+  for (int i=0; i<N; i++)
     Kard[p->Part[i]]++;
-  for (k=1; k<=p->NbClas; k++)
+  int kk = 0;
+  for (int k=1; k <= p->NbClas; k++)
   {
     if (Kard[k]==0)
       continue;
     else
       kk++;
-    card=0;
-    for (i=0; i<N; i++)
+    int card=0;
+    for (int i=0; i<N; i++)
     {
-      if (p->Part[i]==k)
+      if (p->Part[i] == k)
       {
-        p->Clas[card]=i;
+        p->Clas[card] = i;
         card++;
       }
     }
-    for (i=0; i<card; i++)
-      p->Part[p->Clas[i]]=kk;
-    if (card<2)
+    for (int i=0; i<card; i++)
+      p->Part[p->Clas[i]] = kk;
+    if (card <= 1)
       continue;
-    for (k1=1; k1<card; k1++)
+    for (int k1=1; k1<card; k1++)
     {
-      j1=p->Clas[k1];
-      for (k2=0; k2<k1; k2++)
-        j2=p->Clas[k2];
+      int j1 = p->Clas[k1];
+      for (int k2=0; k2<k1; k2++)
+        int j2 = p->Clas[k2];
     }
   }
   p->NbClas=kk;
@@ -414,73 +422,69 @@ void Renum(const float** B, Partition* p)
 
 int Louv2(float** A, const float** B, float** Var, Partition* p)
 {
-  int i, j, k,kk, flag=1,fflag=0, OldC, NewC;
-  float  VarMax;
-
   // poids des connections entre classes
-  for (k=0; k<=p->NbClas; k++)
+  for (int k=0; k <= p->NbClas; k++)
   {
-    for (kk=0; kk<=p->NbClas; kk++)
-      A[k][kk]=0.;
+    for (int kk=0; kk <= p->NbClas; kk++)
+      A[k][kk] = 0.;
   }
-  for (i=1; i<N; i++)
+  for (int i=1; i<N; i++)
   {
-    for (j=0; j<i; j++)
+    for (int j=0; j<i; j++)
     {
-      A[Part[i]][Part[j]] = A[Part[i]][Part[j]]+B[i][j];
-      A[Part[j]][Part[i]] = A[Part[j]][Part[i]]+B[i][j];
+      A[p->Part[i]][p->Part[j]] += B[i][j];
+      A[p->Part[j]][p->Part[i]] += B[i][j];
     }
   }
 
-  for (k=1; k<=p->NbClas; k++)
+  for (int k=1; k<=p->NbClas; k++)
   {
-    p->Clas[k]=k;
-    A[k][k]=0.;
-    for (kk=1; kk<=p->NbClas; kk++)
-      Var[k][kk]=A[k][kk];
+    p->Clas[k] = k;
+    A[k][k] = 0.;
+    for (int kk=1; kk <= p->NbClas; kk++)
+      Var[k][kk] = A[k][kk];
   }
 
   // on fusionne des qu'il y a une connection > 0 entre classes
+  int flag = 1;
+  int fflag = 0;
   while(flag>0)
   {
     flag=0;
-    for (i=1; i<=p->NbClas; i++)
+    for (int i=1; i<=p->NbClas; i++)
     {
-      OldC=p->Clas[i];
-      VarMax=Var[i][OldC];
-      NewC=0;
-      for (k=1; k<=p->NbClas; k++)
+      int OldC = p->Clas[i];
+      float VarMax = Var[i][OldC];
+      int NewC = 0;
+      for (int k=1; k<=p->NbClas; k++)
       {
-        if (Var[i][k]>VarMax)
+        if (Var[i][k] > VarMax)
         {
-          VarMax=Var[i][k];
-          NewC=k;
+          VarMax = Var[i][k];
+          NewC = k;
         }
       }
-      if (VarMax<0.)
+      if (VarMax < 0.)
       {
         p->NbClas++;
-        NewC=p->NbClas;
-        for (k=1; k<p->NbClas; k++)
+        NewC = p->NbClas;
+        for (int k=1; k<p->NbClas; k++)
         {
-          Var[k][p->NbClas]=0.;
-          Var[p->NbClas][k]=A[k][i];
+          Var[k][p->NbClas] = 0.;
+          Var[p->NbClas][k] = A[k][i];
         }
-        Var[p->NbClas][OldC]=Var[i][OldC];
+        Var[p->NbClas][OldC] = Var[i][OldC];
       }
-      if (NewC>0)
-      {
-        flag=1;
-        fflag=1;
-      }
-      else
+      if (NewC <= 0)
         continue;
-      p->Clas[i]=NewC;
+      flag = 1;
+      fflag = 1;
+      p->Clas[i] = NewC;
       // on deplace i de OldC a NewC ; mise a jour de Var
-      for (j=1; j<=p->NbClas; j++)
-        Var[j][OldC]=Var[j][OldC]-A[j][i];
-      for (j=1; j<=p->NbClas; j++)
-        Var[j][NewC]=Var[j][NewC]+A[j][i];
+      for (j=1; j <= p->NbClas; j++)
+        Var[j][OldC] -= A[j][i];
+      for (j=1; j <= p->NbClas; j++)
+        Var[j][NewC] += A[j][i];
     }
   }
   return fflag;
@@ -488,27 +492,23 @@ int Louv2(float** A, const float** B, float** Var, Partition* p)
 
 int TFit(float** A, const float** B, float** Var, int N, Partition* p)
 {
-  int NbPas=0;
-  int fflag=1;
-
+  // Initialize partition:
   for (int i=0; i<N; i++)
     p->Part[i] = i+1;
   p->NbClas = N;
 
-  while (fflag)
+  int NbPas=0;
+  while (1)
   {
     NbPas++;
-    fflag=Louv1(B, Var, p);
-    if (fflag==0)
-      continue;
+    int fflag = Louv1(B, Var, p);
+    if (!fflag)
+      break;
     Renum(B, p);
     // Y a-t-il des connections > 0 entre classes ?
-    fflag=Louv2(A, B, Var, p);
-    if (fflag==0)
-    {
-      printf("\n");
-      continue;
-    }
+    fflag = Louv2(A, B, Var, p);
+    if (!fflag)
+      break;
     for (i=0; i<N; i++)
       p->Part[i]=p->Clas[p->Part[i]];
     Renum(B, p);
@@ -521,28 +521,28 @@ int Transfert(const float** B, float** Var, Partition* p)
   // Calcul de la contribution de chaque élément à chaque classe
   for (int i=0; i<N; i++)
   {
-    for (int k=1; k<=p->NbClas; k++)
-      Var[i][k]=0.;
+    for (int k=1; k <= p->NbClas; k++)
+      Var[i][k] = 0.;
     for (int j=0; j<N; j++)
     {
-      int k=p->Part[j];
-      Var[i][k]=Var[i][k]+B[i][j];
+      int k = p->Part[j];
+      Var[i][k] += B[i][j];
     }
     // meilleure affectation dans Clas[i]
-    float VarMax=-1.;
+    float VarMax = -1.;
     int kk = 0;
-    for (int k=1; k<=p->NbClas; k++)
+    for (int k=1; k <= p->NbClas; k++)
     {
-      if (Var[i][k]>VarMax)
+      if (Var[i][k] > VarMax)
       {
         VarMax = Var[i][k];
-        kk=k;
+        kk = k;
       }
     }
-    if (VarMax>0.)
-      p->Clas[i]=kk;
+    if (VarMax > 0.)
+      p->Clas[i] = kk;
     else
-      p->Clas[i]=0;
+      p->Clas[i] = 0;
   }
 
   // fflag=1 si au moins 1 transfert dans cet appel de la procédure
@@ -619,63 +619,62 @@ double Score(const float** B, int N, short* Part)
   return Sc;
 }
 
-void Around(const float** B, float** Var, Partition* p)
+void Around(const float** B, float** Var, int N, Partition* p)
 {
-  int    i, j, ij, k=0, kmax, es=0, NbC, NbEs=N, NbTrans;
+  int    i, j, ij, k=0, kmax, es=0, NbC, NbEs=N;
   double  ScIni, Sc;
 
-  short* Q = malloc(g->N * sizeof(short));      // subdivision d'une classe 
-  for (i=0; i<N; i++)
-    Q[i]=p->Part[i];
-  NbC=p->NbClas; // mémorise la meilleure partition
-  ScIni=Score(B);
+  short* Q = malloc(N * sizeof(short)); // subdivision d'une classe 
+  for (int i=0; i<N; i++)
+    Q[i] = p->Part[i];
+  NbC = p->NbClas; //mémorise la meilleure partition
+  ScIni = Score(B);
   printf("Sc Ini %.0f : ",ScIni);
-  if (NbEs>500)
-    NbEs=500;
-  while (es<NbEs)
+  if (NbEs > 500) //TODO: explain this number
+    NbEs = 500;
+  while (es < NbEs)
   {
-    for (i=0; i<N; i++)
-      p->Part[i]=Q[i]; // On repart de la meilleure
-    p->NbClas=NbC;
-    if (p->NbClas==1)
+    for (int i=0; i<N; i++)
+      p->Part[i] = Q[i]; //on repart de la meilleure
+    p->NbClas = NbC;
+    if (p->NbClas == 1)
       return;
-    k=0;
-    kmax=1+(1.*rand()/RAND_MAX)*N/p->NbClas; // nb de swapping diminue avec les essais
-    while (k<kmax)
+    int k=0;
+    // Nb de swapping diminue avec les essais:
+    int kmax = 1 + (1.*rand()/RAND_MAX)*N / p->NbClas;
+    while (k < kmax)
     {
-      i=(1.0*rand()/RAND_MAX)*N; // i indice au hasard entre 0 et N-1
-      j=(1.0*rand()/RAND_MAX)*N; // j indice au hasard entre 0 et N-1
-      if (Part[i]!=Part[j])
+      i = (1.0*rand()/RAND_MAX)*N; //i indice au hasard entre 0 et N-1
+      j = (1.0*rand()/RAND_MAX)*N; //j indice au hasard entre 0 et N-1
+      if (Part[i] != Part[j])
       {
-        ij=p->Part[i];
+        ij = p->Part[i];
         p->Part[i]=p->Part[j];
         p->Part[j]=ij;
         k++;
       }
     }
 
-    NbTrans=Transfert(B, Var);
-    Sc=Score(B);
-    if (Sc>ScIni)
+    Transfert(B, Var); //NOTE: unused result (NbTrans)
+    Sc = Score(B);
+    if (Sc > ScIni)
     {
-      for (i=0; i<N; i++)
-        Q[i]=p->Part[i];
-      ScIni=Sc;
-      NbC=p->NbClas;
-      printf("%d %.0f : ",kmax,Sc);
-      es=0;
+      for (int i=0; i<N; i++)
+        Q[i] = p->Part[i];
+      ScIni = Sc;
+      NbC = p->NbClas;
+      es = 0;
     }
     else
       es++;
   }
-  printf("\n\n");
-  p->NbClas=NbC;
+  p->NbClas = NbC;
   for (i=0; i<N; i++)
-    Part[i]=Q[i];
+    Part[i] = Q[i];
   return;
 }
 
-void SaveClas(const char* FichS, const char** Et, int NbClas)
+void SaveClas(const char* FichS, const Graph* g, int NbClas)
 {
   //printf("Minimum cardinality of selected classes (0=all) ");
   //scanf("%d",&Kmin); //TODO: could be a parameter
@@ -684,25 +683,25 @@ void SaveClas(const char* FichS, const char** Et, int NbClas)
   assert(FichClas != NULL);
   
   short* Kard = malloc((g->N+1) * sizeof(short));    // Nb. d'elements dans les classes courantes
-  for (int k=0; k<=NbClas; k++)
+  for (int k=0; k <= NbClas; k++)
     Kard[k]=0;
-  for (int i=0; i<N; i++)
+  for (int i=0; i < g->N; i++)
     Kard[Part[i]]++;
-  for (int k=1; k<=NbClas; k++)
+  for (int k=1; k <= NbClas; k++)
   {
-    if (Kard[k]>=Kmin)
+    if (Kard[k] >= Kmin)
       kk++;
   }
   fprintf(FichClas," %d\n",kk);
 
-  for (int k=1; k<=NbClas; k++)
+  for (int k=1; k <= NbClas; k++)
   {
-    if (Kard[k]<Kmin)
+    if (Kard[k] < Kmin)
       continue;
     fprintf(FichClas," %d\n",Kard[k]);
-    for (int i=0; i<N; i++)
+    for (int i=0; i < g->N; i++)
     {
-      if (Part[i]==k)
+      if (Part[i] == k)
         fprintf(FichClas,"%s ",g->Et[i]);
     }
     fprintf(FichClas,"\n\n");
@@ -718,15 +717,9 @@ void tfit_core(const char* X, const char* out)
 {
   // Read graph data (edges, labels...)
   const Graph* g = LecGraph(X);
+  Partition* p = AllocPartition(g->N);
 
-  short* Clas = malloc((g->N+1) * sizeof(short));      // Classe de chaque element 
-  short* Part = malloc((g->N) * sizeof(short));      // Partition courante
-  Partition* p;
-  p->Clas = Clas;
-  p->Part = Part;
-  p->NbClas = g->N;
-
-  float*** mmod = MatrixMod(1.0);
+  float*** mmod = MatrixMod(1.0, g->N);
   float** A = mmod[0];
   const float** B = mmod[1];
   float** Var = mmod[2];
