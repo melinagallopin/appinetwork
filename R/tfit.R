@@ -2,14 +2,29 @@
 #'
 #' Description de tfit
 #'
-#' @param X un nom de fichier ?
-#'
-#' @return Bonne question ? Il y a un peu de boulot à ce niveau puisque pour l'instant ça ne fait qu'afficher les résultats + stocker dans un fichier.
-#'   Option simple : tout faire via des fichiers, puis lire le fichier depuis R
-#'   Option moins simple : récupérer une sortie structurée sans passer par un fichier .clas
+#' @param X Fichier network d'entrée
+#' @return Partition du graphe + labels
 #'
 #' @export
 tfit <- function(X, out)
 {
-  out = .Call("tfit", X, out, PACKAGE = "appinetwork")
+  edges <- read.table(X, headers=TRUE)
+  nbEdges <- nrow(edges)
+  labels <- unique(c(as.character(edges[,1]), as.character(edges[,2])))
+  nbVertices <- length(labels)
+  integerLabels <- 1:nbVertices
+  # NOTE: following inspired by https://stackoverflow.com/a/46251794
+  # There should be an easier solution (?!)
+  names(integerLabels) <- labels
+  integerLabelsList <- split(unname(integerLabels), names(integerLabels))
+  adjacencyMatrix <- matrix(FALSE, nbVertices, nbVertices)
+  for (i in 1:nbEdges)
+  {
+    integerEdge1 <- integerLabelsList[[ edges[i,1] ]]
+    integerEdge2 <- integerLabelsList[[ edges[i,2] ]]
+    adjacencyMatrix[integerEdge1,integerEdge2] <- TRUE
+    adjacencyMatrix[integerEdge2,integerEdge1] <- TRUE #symmetric graph
+  }
+  partition <- .Call("tfit", adjacencyMatrix, PACKAGE = "appinetwork")
+  list("partition"=partition, "labels"=labels)
 }
