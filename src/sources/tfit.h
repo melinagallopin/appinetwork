@@ -1,1 +1,1 @@
-int tfit_core(int* adjacencyMatrix, int nbVertices, int* partition);
+int tfit_core(int** A, int N, int* P);

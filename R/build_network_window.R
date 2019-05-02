@@ -442,7 +442,7 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 
 					build_network_othero(organism, db, ipl, th, method, degree, remove.sdi, remove.ul, remove.si, update, mainpath, f_pos)
 
-					dispose(bpc)		
+					dispose(bpc)
 				}, container = bpc)
 
 			}

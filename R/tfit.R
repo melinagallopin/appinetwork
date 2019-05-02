@@ -6,9 +6,9 @@
 #' @return Partition du graphe + labels
 #'
 #' @export
-tfit <- function(X, out)
+tfit <- function(X)
 {
-  edges <- read.table(X, headers=TRUE)
+  edges <- read.table(X, header=TRUE)
   nbEdges <- nrow(edges)
   labels <- unique(c(as.character(edges[,1]), as.character(edges[,2])))
   nbVertices <- length(labels)
