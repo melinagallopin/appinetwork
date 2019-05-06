@@ -20,7 +20,7 @@ int Transfert(double** B, int N, int* P, int* K)
   int* Clas = malloc(N*sizeof(int));
   for (int i=0; i<N; i++)
   {
-    Var[i] = calloc(*K, sizeof(double));
+    Var[i] = calloc(N, sizeof(double));
     for (int j=0; j<N; j++)
       Var[i][P[j]] += B[i][j];
     // meilleure affectation dans Clas[i]
@@ -141,8 +141,9 @@ void Around(double** B, int N, int* P, int* K)
     int kmax = 1 + (1.*rand()/RAND_MAX)*N / *K;
     while (k < kmax)
     {
-      int i = (1.0*rand()/RAND_MAX)*N; //i indice au hasard entre 0 et N-1
-      int j = (1.0*rand()/RAND_MAX)*N; //j indice au hasard entre 0 et N-1
+      // Indices au hasard entre 0 et N-1:
+      int i = floor(((double)rand() / RAND_MAX) * N);
+      int j = floor(((double)rand() / RAND_MAX) * N);
       if (P[i] != P[j])
       {
         int ij = P[i];
@@ -175,7 +176,7 @@ void Around(double** B, int N, int* P, int* K)
 
 int Louv1(double** B, int N, int* P, int* K)
 {
-  // Calcul de la contribution de chaque element a chaque classe
+  // Calcul de la contribution de chaque element à chaque classe
   double** Var = malloc(N*sizeof(double*));
   for (int i=0; i<N; i++)
   {
@@ -233,7 +234,7 @@ int Louv1(double** B, int N, int* P, int* K)
 void Renum(double** B, int N, int* P, int* K)
 {
   // Nb. d'elements dans les classes courantes:
-  int* Kard = calloc(*K, sizeof(int));
+  int* Kard = calloc(N, sizeof(int));
   for (int i=0; i<N; i++)
     Kard[P[i]]++;
   int kk = 0;
@@ -254,9 +255,9 @@ void Renum(double** B, int N, int* P, int* K)
 int Louv2(double** B, int N, int* P, int* K)
 {
   // Poids des connections entre classes:
-  double** W = malloc(*K * sizeof(double*));
-  for (int k=0; k < *K; k++)
-    W[k] = calloc(*K, sizeof(double));
+  double** W = malloc(N*sizeof(double*)); //size N > K to avoid segfault (TODO)
+  for (int k=0; k<N; k++)
+    W[k] = calloc(N, sizeof(double));
   for (int i=0; i<N; i++)
   {
     for (int j=0; j<i; j++)
@@ -266,11 +267,12 @@ int Louv2(double** B, int N, int* P, int* K)
     }
   }
 
-  double** Var = malloc(*K * sizeof(double*));
-  int* Clas = malloc(*K * sizeof(int));
-  for (int k=0; k < *K; k++)
+  double** Var = malloc(N*sizeof(double*)); //N, because K could increase
+  int* Clas = malloc(N*sizeof(int));
+  for (int k=0; k<N; k++)
   {
-    Var[k] = malloc(N*sizeof(double)); //N, because K could increase
+    W[k][k] = 0.;
+    Var[k] = calloc(N, sizeof(double));
     Clas[k] = k;
     for (int kk=0; kk < *K; kk++)
       Var[k][kk] = W[k][kk];
@@ -299,7 +301,7 @@ int Louv2(double** B, int N, int* P, int* K)
       {
         (*K)++;
         NewC = *K - 1;
-        for (int k=1; k < *K; k++)
+        for (int k=0; k < *K; k++)
         {
           Var[k][NewC] = 0.;
           Var[NewC][k] = W[k][i];
@@ -335,30 +337,6 @@ int Louv2(double** B, int N, int* P, int* K)
   free(Clas);
 
   return fflag;
-}
-
-int TFit(double** B, int N, int* P)
-{
-  // Initialize partition:
-  for (int i=0; i<N; i++)
-    P[i] = i;
-  int K = N;
-
-  int NbPas = 0; //NOTE: for debug
-  while (1)
-  {
-    NbPas++;
-    if (!Louv1(B, N, P, &K))
-      break;
-    Renum(B, N, P, &K);
-    // Y a-t-il des connections > 0 entre classes ?
-    if (!Louv2(B, N, P, &K))
-      break;
-    Renum(B, N, P, &K);
-  }
-
-  //return NbPas;
-  return K; //TODO
 }
 
 // Calcule la matrice des pondérations des paires
@@ -408,9 +386,26 @@ double** MatrixMod(double alpha, int N, int** A)
 void tfit_core(int** A, int N, int* P)
 {
   double** B = MatrixMod(1.0, N, A);
-  int K = TFit(B, N, P); //NOTE: unused result NbPas (for debug)
+
+  // Initialize partition:
+  for (int i=0; i<N; i++)
+    P[i] = i;
+  int K = N;
+
+  int NbPas = 0; //NOTE: for debug
+  while (1)
+  {
+    NbPas++;
+    if (!Louv1(B, N, P, &K))
+      break;
+    Renum(B, N, P, &K);
+    // Y a-t-il des connections > 0 entre classes ?
+    if (!Louv2(B, N, P, &K))
+      break;
+    Renum(B, N, P, &K);
+  }
+  //printf("NbPas: %i\n", NbPas);
   Around(B, N, P, &K);
-  //ClasOut(g, p);
 
   // Release memory
   for (int i=0; i<N; i++)
