@@ -118,6 +118,7 @@ double Score(double** B, int N, int* P)
   return Sc;
 }
 
+// NOTE: this is the stochastic optimization procedure described in the article:
 void Around(double** B, int N, int* P, int* K)
 {
   int* Q = malloc(N*sizeof(int)); // subdivision d'une classe
@@ -176,7 +177,7 @@ void Around(double** B, int N, int* P, int* K)
 
 int Louv1(double** B, int N, int* P, int* K)
 {
-  // Calcul de la contribution de chaque element à chaque classe
+  // Calcul de la contribution de chaque élément à chaque classe
   double** Var = malloc(N*sizeof(double*));
   for (int i=0; i<N; i++)
   {
@@ -356,12 +357,10 @@ double** MatrixMod(double alpha, int N, int** A)
     B[i][i] = 0.;
     for (int j=0; j<N; j++)
       Sum[i] += A[i][j];
-    SumMax += Sum[i];
+    SumMax += Sum[i]; //TODO: SumMax = 2x number of edges / Sum[i] = degree of i
   }
 
   //  Matrice B
-  double ModTot=0.;
-  double ModMax=0.;
   for (int i=1; i<N; i++)
   {
     for (int j=0; j<i; j++)
@@ -370,11 +369,6 @@ double** MatrixMod(double alpha, int N, int** A)
       // B[i][j]=(1+alpha)*SumMax*A[i][j]-Sum[i]*Sum[j]-alpha*SumMax; //celle de Fred
       // B[i][j]=(1+alpha)*SumMax*A[i][j]-alpha*SumMax; //new Fred
       B[j][i] = B[i][j];
-      ModTot += B[i][j];
-      if (A[i][j])
-        ModMax += B[i][j];
-      // La partie supérieure droite marquera à 1 les paires d'éléments
-      // réunis dans au moins une classe.
     }
   }
   free(Sum);
