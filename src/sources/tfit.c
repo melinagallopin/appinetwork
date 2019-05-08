@@ -13,252 +13,82 @@
 //   B = modularity matrix
 //   P = partition
 
-int Transfert(double** B, int N, int* P, int* K)
+// Compute the total score (sum of intra-clusters weights)
+double GetScore(double** B, int N, int* P)
 {
-  // Calcul de la contribution de chaque élément à chaque classe
-  double** Var = malloc(N*sizeof(double*));
-  int* Clas = malloc(N*sizeof(int));
-  for (int i=0; i<N; i++)
-  {
-    Var[i] = calloc(N, sizeof(double));
-    for (int j=0; j<N; j++)
-      Var[i][P[j]] += B[i][j];
-    // meilleure affectation dans Clas[i]
-    double VarMax = -1.;
-    int kk = 0;
-    for (int k=0; k < *K; k++)
-    {
-      if (Var[i][k] > VarMax)
-      {
-        VarMax = Var[i][k];
-        kk = k;
-      }
-    }
-    if (VarMax > 0.)
-      Clas[i] = kk;
-    else
-      Clas[i] = -1;
-  }
-
-  // fflag=1 si au moins 1 transfert dans cet appel de la procédure
-  int NbTrans=0, OldC, NewC;
-  while (1)
-  {
-    double gainmax = 0.;
-    int ii = -1;
-    // cherche le meilleur transfert
-    for (int i=0; i<N; i++)
-    {
-      double gain = (Clas[i] >= 0 ? Var[i][Clas[i]]-Var[i][P[i]] : 0.);
-      if (gain > gainmax)
-      {
-        gainmax = gain;
-        ii = i;
-      }
-    }
-    if (ii == -1) // plus rien à gagner
-      break;
-    NbTrans++; // on deplace ii ; mise a jour de Var
-    int OldC = P[ii];
-    int NewC = Clas[ii];
-
-    for (int j=0; j<N; j++)
-      Var[j][OldC] -= B[j][ii];
-    if (NewC < 0)
-    {
-      (*K)++;
-      NewC = *K-1;
-    }
-    P[ii] = NewC;
-    for (int j=0; j<N; j++)
-    {
-      Var[j][NewC] += B[j][ii];
-      if (Clas[j] == OldC)
-      {
-        // on recalcule la meilleure affectation
-        double VarMax = -1.;
-        int kk = 0;
-        for (int k=1; k < *K; k++)
-        {
-          if (Var[j][k] > VarMax)
-          {
-            VarMax = Var[j][k];
-            kk = k;
-          }
-        }
-        if (VarMax>0.)
-          Clas[j] = kk;
-        else
-          Clas[j] = -1;
-      }
-      else if (Var[j][NewC] > Var[j][Clas[j]])
-        Clas[j] = NewC;
-    }
-  }
-
-  for (int i=0; i<N; i++)
-    free(Var[i]);
-  free(Var);
-  free(Clas);
-
-  return NbTrans;
-}
-
-double Score(double** B, int N, int* P)
-{
-  double  Sc = 0.;
+  double score = 0.;
   for (int i=0; i<N; i++)
   {
     for (int j=0; j<i; j++)
     {
       if (P[i] == P[j])
-        Sc += B[i][j];
+        score += B[i][j];
     }
   }
-  return Sc;
+  return score;
 }
 
-// NOTE: this is the stochastic optimization procedure described in the article:
-void Around(double** B, int N, int* P, int* K)
+// Compute the modularity matrix B (weighting of edges)
+double** GetModularityMatrix(int N, int** A)
 {
-  int* Q = malloc(N*sizeof(int)); // subdivision d'une classe
+  // NOTE: in current version B is an integer matrix
+  double** B = malloc(N*sizeof(double*));
   for (int i=0; i<N; i++)
-    Q[i] = P[i];
-  int NbC = *K; //mémorise la meilleure partition
-  double ScIni = Score(B, N, P);
-  int NbEs = N;
-  if (NbEs > 500) //TODO: explain this number
-    NbEs = 500;
-  int es = 0;
-  while (es < NbEs)
+    B[i] = malloc (N*sizeof(double));
+
+  int nbEdges = 0; //in fact 2 x number of edges
+  int* degrees = malloc(N*sizeof(int));
+  for (int i=0; i<N; i++)
   {
-    for (int i=0; i<N; i++)
-      P[i] = Q[i]; //on repart de la meilleure
-    *K = NbC;
-    if (*K == 1)
-      return;
-    int k = 0;
-    // Nb de swapping diminue avec les essais:
-    int kmax = 1 + (1.*rand()/RAND_MAX)*N / *K;
-    while (k < kmax)
-    {
-      // Indices au hasard entre 0 et N-1:
-      int i = floor(((double)rand() / RAND_MAX) * N);
-      int j = floor(((double)rand() / RAND_MAX) * N);
-      if (P[i] != P[j])
-      {
-        int ij = P[i];
-        P[i] = P[j];
-        P[j] = ij;
-        k++;
-      }
-    }
-
-    Transfert(B, N, P, K); //NOTE: unused result (NbTrans)
-    double Sc = Score(B, N, P);
-    if (Sc > ScIni)
-    {
-      for (int i=0; i<N; i++)
-        Q[i] = P[i];
-      ScIni = Sc;
-      NbC = *K;
-      es = 0;
-    }
-    else
-      es++;
+    degrees[i] = 0.;
+    B[i][i] = 0.;
+    for (int j=0; j<i; j++)
+      degrees[i] += A[i][j];
+    nbEdges += degrees[i];
   }
-  *K = NbC;
-  for (int i=0; i<N; i++)
-    P[i] = Q[i];
 
-  free(Q);
-  return;
+  for (int i=1; i<N; i++)
+  {
+    for (int j=0; j<i; j++)
+    {
+      B[i][j] = nbEdges*A[i][j] - degrees[i]*degrees[j];
+      B[j][i] = B[i][j];
+    }
+  }
+
+  free(degrees);
+  return B;
 }
 
-int Louv1(double** B, int N, int* P, int* K)
+// Renumbering of clusters, potentially changing K
+void Renumber(int N, int* P, int* K)
 {
-  // Calcul de la contribution de chaque élément à chaque classe
-  double** Var = malloc(N*sizeof(double*));
+  int* nbElems = calloc(N, sizeof(int)); //number of items per class
   for (int i=0; i<N; i++)
+    nbElems[P[i]]++;
+  int classIdx = 0;
+  for (int k=0; k<N; k++)
   {
-    Var[i] = calloc(N, sizeof(double)); //N, because K could increase
-    for (int j=0; j<N; j++)
-      Var[i][P[j]] += B[i][j];
-  }
-
-  // fflag = 1 si au moins 1 transfert dans cet appel de la procédure
-  int flag = 1;
-  int fflag = 0;
-  while (flag > 0)
-  {
-    flag = 0; //transfert dans cette boucle
-    for (int i=0; i<N; i++)
-    {
-      int OldC = P[i];
-      double VarMax = Var[i][OldC];
-      int NewC = -1;
-      for (int k=0; k < *K; k++)
-      {
-        if (Var[i][k] > VarMax)
-        {
-          VarMax = Var[i][k];
-          NewC = k;
-        }
-      }
-      if (NewC < 0 && VarMax >= 0.)
-        continue;
-      flag = 1;
-      fflag = 1;
-      for (int j=0; j<N; j++)
-        Var[j][OldC] -= B[j][i];
-      if (VarMax < 0.)
-      {
-        (*K)++;
-        NewC = *K - 1;
-        for (int j=0; j<N; j++)
-          Var[j][NewC] = 0.;
-      }
-      P[i] = NewC;
-      for (int j=0; j<N; j++)
-        Var[j][NewC] += B[j][i];
-    }
-  }
-
-  for (int i=0; i<N; i++)
-    free(Var[i]);
-  free(Var);
-
-  return fflag;
-}
-
-// Renumérote les classes
-void Renum(double** B, int N, int* P, int* K)
-{
-  // Nb. d'elements dans les classes courantes:
-  int* Kard = calloc(N, sizeof(int));
-  for (int i=0; i<N; i++)
-    Kard[P[i]]++;
-  int kk = 0;
-  for (int k=0; k < *K; k++)
-  {
-    if (Kard[k] == 0)
+    if (nbElems[k] == 0)
       continue;
-    kk++;
     for (int i=0; i<N; i++)
     {
       if (P[i] == k)
-        P[i] = kk; //kk <= k, so it's OK
+        P[i] = classIdx; //classIdx <= k, so it's OK
     }
+    classIdx++;
   }
-  *K = kk;
+  free(nbElems);
+  *K = classIdx; //next class index
 }
 
-int Louv2(double** B, int N, int* P, int* K)
+// Iteratively merge clusters while the resulting score increses
+int Fusion(double** B, int N, int* P, int K)
 {
-  // Poids des connections entre classes:
-  double** W = malloc(N*sizeof(double*)); //size N > K to avoid segfault (TODO)
-  for (int k=0; k<N; k++)
-    W[k] = calloc(N, sizeof(double));
+  // Precompute the inter-classes scores (weights):
+  double** W = malloc(K*sizeof(double*));
+  for (int k=0; k<K; k++)
+    W[k] = calloc(K, sizeof(double));
   for (int i=0; i<N; i++)
   {
     for (int j=0; j<i; j++)
@@ -267,141 +97,202 @@ int Louv2(double** B, int N, int* P, int* K)
       W[P[j]][P[i]] += B[i][j];
     }
   }
+  int* emptyClass = calloc(K, sizeof(int));
 
-  double** Var = malloc(N*sizeof(double*)); //N, because K could increase
-  int* Clas = malloc(N*sizeof(int));
-  for (int k=0; k<N; k++)
+  int atLeastOneFusion = 0;
+  while (1)
   {
-    W[k][k] = 0.;
-    Var[k] = calloc(N, sizeof(double));
-    Clas[k] = k;
-    for (int kk=0; kk < *K; kk++)
-      Var[k][kk] = W[k][kk];
-  }
-
-  // on fusionne des qu'il y a une connection > 0 entre classes
-  int flag = 1;
-  int fflag = 0;
-  while (flag > 0)
-  {
-    flag = 0;
-    for (int i=0; i < *K; i++)
+    double maxDeltaScore = -1.;
+    int k1 = 0;
+    int k2 = 0;
+    for (int k=0; k<K; k++)
     {
-      int OldC = Clas[i];
-      double VarMax = Var[i][OldC];
-      int NewC = -1;
-      for (int k=0; k < *K; k++)
-      {
-        if (Var[i][k] > VarMax)
-        {
-          VarMax = Var[i][k];
-          NewC = k;
-        }
-      }
-      if (VarMax < 0.)
-      {
-        (*K)++;
-        NewC = *K - 1;
-        for (int k=0; k < *K; k++)
-        {
-          Var[k][NewC] = 0.;
-          Var[NewC][k] = W[k][i];
-        }
-        Var[NewC][OldC] = Var[i][OldC];
-      }
-      if (NewC < 0)
+      if (emptyClass[k])
         continue;
-      flag = 1;
-      fflag = 1;
-      Clas[i] = NewC;
-      // on deplace i de OldC a NewC ; mise a jour de Var
-      for (int j=0; j < *K; j++)
-        Var[j][OldC] -= W[j][i];
-      for (int j=0; j < *K; j++)
-        Var[j][NewC] += W[j][i];
+      for (int kk=0; kk<k; kk++)
+      {
+        if (emptyClass[kk])
+          continue;
+        // Compute the score variation if classes k and kk are merged
+        if (W[k][kk] > maxDeltaScore)
+        {
+          maxDeltaScore = W[k][kk];
+          k1 = k;
+          k2 = kk;
+        }
+      }
     }
-  }
 
-  if (fflag)
-  {
+    if (maxDeltaScore <= 0.)
+      break; //no more fusions to achieve
+    atLeastOneFusion = 1;
+
+    // Apply fusion between classes k1 and k2 (discard k2 --> empty)
+    for (int k=0; k<K; k++)
+    {
+      if (k == k1 || k == k2)
+        continue;
+      W[k][k1] += W[k][k2];
+      W[k1][k] += W[k][k2];
+    }
     for (int i=0; i<N; i++)
-      P[i] = Clas[P[i]];
+    {
+      if (P[i] == k2)
+        P[i] = k1;
+    }
+    emptyClass[k2] = 1;
   }
 
-  for (int i=0; i < *K; i++)
-  {
-    free(Var[i]);
-    free(W[i]);
-  }
-  free(Var);
+  for (int k=0; k<K; k++)
+    free(W[k]);
   free(W);
-  free(Clas);
+  free(emptyClass);
 
-  return fflag;
+  return atLeastOneFusion;
 }
 
-// Calcule la matrice des pondérations des paires
-double** MatrixMod(double alpha, int N, int** A)
+// Iteratively transfer vertices from one cluster to another,
+// until the resulting score cannot increase.
+int Transfer(double** B, int N, int* P, int K)
 {
-  double** B = malloc(N * sizeof(double*)); //matrice des modularités
+  // Compute the contributions of each vertex to all classes
+  double** contribs = malloc(N*sizeof(double*));
   for (int i=0; i<N; i++)
-    B[i] = malloc (N * sizeof(double));
-
-  // On évalue les sommes en chaque sommet
-  double SumMax = 0.;
-  // Somme des poids des aretes en chaque sommet:
-  double* Sum = malloc(N * sizeof(double));
+    contribs[i] = calloc(K, sizeof(double));
   for (int i=0; i<N; i++)
-  {
-    Sum[i] = 0.;
-    B[i][i] = 0.;
-    for (int j=0; j<N; j++)
-      Sum[i] += A[i][j];
-    SumMax += Sum[i]; //TODO: SumMax = 2x number of edges / Sum[i] = degree of i
-  }
-
-  //  Matrice B
-  for (int i=1; i<N; i++)
   {
     for (int j=0; j<i; j++)
     {
-      B[i][j] = alpha*SumMax*A[i][j] - Sum[i]*Sum[j]/alpha; //ma formule
-      // B[i][j]=(1+alpha)*SumMax*A[i][j]-Sum[i]*Sum[j]-alpha*SumMax; //celle de Fred
-      // B[i][j]=(1+alpha)*SumMax*A[i][j]-alpha*SumMax; //new Fred
-      B[j][i] = B[i][j];
+      contribs[i][P[j]] += B[i][j];
+      contribs[j][P[i]] += B[i][j];
     }
   }
-  free(Sum);
-  return B;
+
+  int atLeastOneTransfer = 0;
+  while (1)
+  {
+    // Try to increase score:
+    double maxScoreIncrease = -1.;
+    int index = 0;
+    int cluster = 0;
+    for (int i=0; i<N; i++)
+    {
+      // If the contribution of vertex i to its own class is negative,
+      // then it's better out (potentially creating a new class): case k == K
+      for (int k=0; k <= K; k++)
+      {
+        if (k == P[i]) //moving to its own class is no move
+          continue;
+        double score = (k < K ? contribs[i][k] : 0.) - contribs[i][P[i]];
+        if (score > maxScoreIncrease)
+        {
+          maxScoreIncrease = score;
+          index = i;
+          cluster = k;
+        }
+      }
+    }
+
+    if (maxScoreIncrease <= 0.)
+      break;
+    atLeastOneTransfer = 1;
+
+    // Apply transfert:
+    for (int i=0; i<N; i++)
+    {
+      contribs[i][P[index]] -= B[i][index];
+      contribs[i][cluster] += B[i][index];
+    }
+    P[index] = cluster;
+    if (cluster == K)
+      K++;
+  }
+
+  for (int i=0; i<N; i++)
+    free(contribs[i]);
+  free(contribs);
+
+  return atLeastOneTransfer;
 }
 
-// Calcule une partition qui optimise un critère de modularité
-// Algorithme de Transfert-Fusion itéré
+// Perturb the vertices assignation (randomly changing classes of some of
+// them), in the hope to find a better partition.
+void StochasticOptimization(double** B, int N, int* P, int K)
+{
+  if (K == 1) //only one partition, nothing to do
+    return;
+  int* bestP = malloc(N*sizeof(int)); //best partition found so far
+  for (int i=0; i<N; i++)
+    bestP[i] = P[i];
+  int bestK = K;
+  double bestScore = GetScore(B, N, P);
+  int maxNbAttempts = fmin(N, 500);
+  for (int attempt = 0; attempt < maxNbAttempts; attempt++)
+  {
+    // Start from best partition found so far:
+    for (int i=0; i<N; i++)
+      P[i] = bestP[i];
+    K = bestK;
+    // TODO: next nbSwaps value is arbitrary ("magic expression").
+    // The idea is to decrease nbSwaps over time ("decrease temperature")
+    int nbSwaps = floor(pow(N, (maxNbAttempts-attempt)/maxNbAttempts));
+    int swapIdx = 0;
+    while (swapIdx < nbSwaps)
+    {
+      // Draw random indexes between 0 and N-1 (included):
+      int i = floor(((double)rand() / RAND_MAX) * N);
+      int j = floor(((double)rand() / RAND_MAX) * N);
+      if (P[i] != P[j])
+      {
+        int tmp = P[i];
+        P[i] = P[j];
+        P[j] = tmp;
+        swapIdx++;
+      }
+    }
+
+    if (!Transfer(B, N, P, K))
+      continue; //no transfert achieved
+    Renumber(N, P, &K);
+
+    double score = GetScore(B, N, P);
+    if (score > bestScore)
+    {
+      for (int i=0; i<N; i++)
+        bestP[i] = P[i];
+      bestScore = score;
+      bestK = K;
+    }
+  }
+
+  for (int i=0; i<N; i++)
+    P[i] = bestP[i];
+  free(bestP);
+}
+
+// Find a partition which optimize a modularity criterion:
+// Iterated Fusion-Transfer algorithm.
 void tfit_core(int** A, int N, int* P)
 {
-  double** B = MatrixMod(1.0, N, A);
+  // Compute the modularity matrix (edges' weights)
+  double** B = GetModularityMatrix(N, A);
 
-  // Initialize partition:
+  // Initialize partition: each vertex in its own class
   for (int i=0; i<N; i++)
     P[i] = i;
   int K = N;
 
-  int NbPas = 0; //NOTE: for debug
   while (1)
   {
-    NbPas++;
-    if (!Louv1(B, N, P, &K))
+    if (!Fusion(B, N, P, K))
       break;
-    Renum(B, N, P, &K);
-    // Y a-t-il des connections > 0 entre classes ?
-    if (!Louv2(B, N, P, &K))
+    Renumber(N, P, &K);
+    if (!Transfer(B, N, P, K))
       break;
-    Renum(B, N, P, &K);
+    Renumber(N, P, &K);
   }
-  //printf("NbPas: %i\n", NbPas);
-  Around(B, N, P, &K);
+  StochasticOptimization(B, N, P, K);
 
-  // Release memory
   for (int i=0; i<N; i++)
     free(B[i]);
   free(B);
