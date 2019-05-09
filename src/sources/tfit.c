@@ -82,7 +82,7 @@ void Renumber(int N, int* P, int* K)
   *K = classIdx; //next class index
 }
 
-// Iteratively merge clusters while the resulting score increses
+// Iteratively merge clusters while the resulting score increases
 int Fusion(double** B, int N, int* P, int K)
 {
   // Precompute the inter-classes scores (weights):
