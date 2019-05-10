@@ -311,4 +311,8 @@ void tfit_core(int** A, int N, int* P)
   for (int i=0; i<N; i++)
     free(B[i]);
   free(B);
+
+  // R expect integers indexes to start at 1:
+  for (int i=0; i<N; i++)
+    P[i]++;
 }

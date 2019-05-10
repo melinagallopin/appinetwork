@@ -7,12 +7,10 @@ interface <- function() {
 	# Main navigation window allowing the access to the different package's options
 	mainpanel <<- gwindow("appinetwork interface" , parent = f_pos, visible = F)
 	g <- ggroup(container = mainpanel, horizontal = F)
-
     # Construction an ID correspondence file for a selected organism
 	bouton0 <- gbutton("Construct an ID correspondence file", container = g, handler = function(...) {
 		visible(mainpanel) <- F
 		thesaurus_window(f_pos, mainpanel, mainpath)
-
 	})
 
 	# Formatting of database files used for the PPI network building
@@ -47,7 +45,6 @@ interface <- function() {
 			}, container = pag)
 
 		visible(pana) <- T
-
 	})
 
 	# Building the network
@@ -62,30 +59,5 @@ interface <- function() {
 		assembly_intermediary_window(f_pos, mainpanel)
 	})
 
-	# PPI network clustering to identify proteins of a biological process
-	bouton5 <- gbutton("Identify proteins of a biological process", container = g, handler = function(...) {
-		visible(mainpanel) <- F
-		# Diplay Clustering
-		panb <<- gwindow("Clustering", parent = f_pos, width = '300', height = '300', visible = F)
-		pagb <- ggroup(container = panb, horizontal = F)
-
-		# Clustering with TFit
-		bouton1 <- gbutton("TFit", container = pagb, handler = function(...) {
-		  visible(panb) <- F
-		  clustering_tfit_window(f_pos, mainpanel, panb, mainpath)
-		})
-
-		# Return to the main navigation window (principal menu)
-		gbutton("Return", handler = function(h,...) {
-			dispose(panb)
-			visible(mainpanel) <- T
-			}, container = pagb)
-
-		visible(panb) <- T
-
-	})
-
 	visible(mainpanel) <- T
-
 }
-
