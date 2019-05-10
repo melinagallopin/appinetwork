@@ -1,9 +1,5 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <assert.h>
 #include <math.h>
-#include <unistd.h>
 
 // Méthode de Transfert-Fusion itérée
 // Lexique:
@@ -12,6 +8,26 @@
 //   A = adjacency matrix
 //   B = modularity matrix
 //   P = partition
+
+// For debug:
+//#include <stdio.h>
+//void printMat(double** mat, int n, int m, char* name)
+//{
+//  printf("print %s\n", name);
+//  for (int i=0; i<n; i++)
+//  {
+//    for (int j=0; j<m; j++)
+//      printf("%f ", mat[i][j]);
+//    printf("\n");
+//  }
+//}
+//void printPart(int* p, int N, char* msg)
+//{
+//  printf("partition: [ %s ]\n", msg);
+//  for (int i=0; i<N; i++)
+//    printf("%i ", p[i]);
+//  printf("\n");
+//}
 
 // Compute the total score (sum of intra-clusters weights)
 double GetScore(double** B, int N, int* P)
@@ -40,9 +56,9 @@ double** GetModularityMatrix(int N, int** A)
   int* degrees = malloc(N*sizeof(int));
   for (int i=0; i<N; i++)
   {
-    degrees[i] = 0.;
+    degrees[i] = 0;
     B[i][i] = 0.;
-    for (int j=0; j<i; j++)
+    for (int j=0; j<N; j++)
       degrees[i] += A[i][j];
     nbEdges += degrees[i];
   }
@@ -276,7 +292,6 @@ void tfit_core(int** A, int N, int* P)
 {
   // Compute the modularity matrix (edges' weights)
   double** B = GetModularityMatrix(N, A);
-
   // Initialize partition: each vertex in its own class
   for (int i=0; i<N; i++)
     P[i] = i;

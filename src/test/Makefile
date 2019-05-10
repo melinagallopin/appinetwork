@@ -1,2 +1,7 @@
-test:
-	gcc -g -o test.exe ../sources/tfit.c test.tfit.c -lm
+all: rtest dtest
+
+rtest:
+	gcc -g -o rtest.exe ../sources/tfit.c rtest.tfit.c -lm
+
+dtest:
+	gcc -g -o dtest.exe ../sources/tfit.c dtest.tfit.c -lm
