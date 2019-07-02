@@ -359,36 +359,36 @@ load_data <- function(db) {
 
 ############################################################################################
 
-# TODO: this is essentially just a data frame loading, could be simplified
-load_network <- function(nw)
-{
+load_network <- function(nw) {
+  
   # Recuperation des donnes contenues dans le reseau selectionne
+  cat('\n>Loading network ... ')
   network.name.list <- nw
-
+  
   # Verification de la presence d'interactions dans le reseau
   if (length(network.name.list) == 0) {
     cat('ERROR : no network selected')
     stop()
   }
-
+  
   # Verification de la compatibilite de format du reseau
   multiple.network <- c()
   for (i in 1:length(network.name.list)) {
-    one.multiple.network <-
-      read.delim2(network.name.list[i], header=T, sep='\t', stringsAsFactors=F)
+    one.multiple.network <- read.delim2(network.name.list[i], header = T, sep = '\t', stringsAsFactors = F)
     tryCatch({
-      colnames(one.multiple.network) <-
-        c("aliasA", "method", "aliasB", "uidA", "uidB", "pmid", "taxA", "taxB",
-          "interactionType", "sourceBD", "GeneNameA", "GeneNameB","NbPmids")
+      colnames(one.multiple.network)  <- c("aliasA", "method", "aliasB", "uidA", "uidB", "pmid", "taxA", "taxB", "interactionType", "sourceBD", "GeneNameA", "GeneNameB","NbPmids" )
       multiple.network <- rbind(multiple.network, one.multiple.network)
     }, error = function(err) {
       message(err)
       message('Network dimension uncorrect')
     })
   }
-
+  
+  cat('OK dim :')
+  cat(dim(unique(multiple.network)))
   # Recuperation du reseau si le format correspond
   return(unique(multiple.network))
+  
 }
 
 ############################################################################################
