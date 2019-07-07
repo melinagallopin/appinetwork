@@ -30,7 +30,6 @@ You can copy paste the following R commands all at once :
 
 This package implements a function `interface()` which enables to format PPI databses and performs two mains analysis : model complexes assembly intermediaries and cluster PPI networks. The step by step procedure is described here : [userguide](https://github.com/melinagallopin/data/blob/master/userguide.pdf)
 
-Currently, the final function `tfit` to cluster the network of second degree physical interactions does not work using the interface. We have to use the function  `tfit()` directly in command line. 
 
 
 ## For more information : read the  [userguide](https://github.com/melinagallopin/data/blob/master/userguide.pdf)
