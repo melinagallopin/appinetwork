@@ -844,7 +844,7 @@ finish <- function(network, network2, r.s.i, r.u.l, UpDate, selected.database4, 
   network2 <<- as.matrix(selected.database3)
   # Remove self-interactant
   if (r.s.i == 'yes') {
-    cat('\n>Removing self-interactants ... ')
+    cat('\n>Removing self-interactant ... ')
     network2 <<- network2[network2[,4] != network2[,5],]
     cat('OK')
   }

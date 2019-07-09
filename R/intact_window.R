@@ -194,7 +194,7 @@ intact_window <- function(f_pos, mainpanel, pana, mainpath) {
 
 	ppb <- ggroup(container = pp)
 	addSpring(ppb)
-	gbutton("Formate file", handler = function(h,...) {
+	gbutton("Format file", handler = function(h,...) {
 
 		return.parameter <<- svalue(flyt)
 		visible(panel_para) <- F
@@ -205,7 +205,7 @@ intact_window <- function(f_pos, mainpanel, pana, mainpath) {
 		# When all paramaters are Ok
 		if (is.null(file) == F) {
 			######################################################################################
-			########################### FORMATE AND PARSING #################################
+			########################### FORMATING AND PARSING #################################
 
 			pathracine <- getwd()
 

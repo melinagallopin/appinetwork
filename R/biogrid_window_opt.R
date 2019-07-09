@@ -203,7 +203,7 @@ biogrid_window2 <- function(f_pos, mainpanel, pana, mainpath) {
 
     ppb <- ggroup(container = pp)
     addSpring(ppb)
-    gbutton("Formate file", handler = function(h,...) {
+    gbutton("Format file", handler = function(h,...) {
 
         return.parameter <<- svalue(flyt)
         visible(panel_para) <- F

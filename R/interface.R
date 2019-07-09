@@ -8,8 +8,8 @@ interface <- function() {
 	mainpanel <<- gwindow("appinetwork interface" , parent = f_pos, visible = F)
 	g <- ggroup(container = mainpanel, horizontal = F)
 
-    # Construction an ID correspondence file for a selected organism
-	bouton0 <- gbutton("Construct an ID correspondence file", container = g, handler = function(...) {
+    # Construction an ID correspondences file for a selected organism
+	bouton0 <- gbutton("Construct an ID correspondences file", container = g, handler = function(...) {
 		visible(mainpanel) <- F
 		thesaurus_window(f_pos, mainpanel, mainpath)
 
@@ -56,8 +56,8 @@ interface <- function() {
 		build_network_window(f_pos, mainpanel, mainpath)
 	})
 
-	# Modeling of the assembly intermediaries of a protein complex
-	bouton4 <- gbutton("Modeling the assembly intermediaries of a protein complex", container = g, handler = function(...) {
+	# Model of the assembly intermediaries of a protein complex
+	bouton4 <- gbutton("Model the assembly intermediaries of a protein complex", container = g, handler = function(...) {
 		visible(mainpanel) <- F
 		assembly_intermediary_window(f_pos, mainpanel)
 	})

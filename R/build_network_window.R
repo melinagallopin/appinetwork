@@ -167,7 +167,7 @@ build_network_othero <- function(organism, db, ipl, th, method, degree, remove.s
   network <<- as.matrix(selected.database3)
   # Remove self-interactant
   if (r.s.i == 'yes'){
-    cat('\n>Removing self-interactants : first sort ... ')
+    cat('\n>Removing self-interactant : first sort ... ')
     network <<- network[as.vector(network[,4]) != as.vector(network[,5]),]
     cat('OK')
   }
@@ -350,7 +350,7 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 	gradio(c("First-degree", "Second-degree"), selected = 1, horizontal = TRUE, label = "Interaction type", container = flyt)
 	gradio(c("Yes", "No"), selected = 1, horizontal = TRUE, label = "Remove second degree unique links", container = flyt)
 	gradio(c("Yes", "No"), selected = 2, horizontal = TRUE, label = "Remove all unique links", container = flyt)
-	gradio(c("Yes", "No"), selected = 1, horizontal = TRUE, label = "Remove self-interactants", container = flyt)
+	gradio(c("Yes", "No"), selected = 1, horizontal = TRUE, label = "Remove self-interactant", container = flyt)
 	gradio(c("Yes", "No"), selected = 1, horizontal = TRUE, label = "Update databases if necessary", container = flyt)
 
 	# Selection des bases de donnees
@@ -618,7 +618,7 @@ build_network_window <- function(f_pos, mainpanel, mainpath) {
 
 				# Remove self-interactant
 				if (r.s.i == 'yes'){
-					cat('\n>Removing self-interactants  ...\n')
+					cat('\n>Removing self-interactant  ...\n')
 					network <- network[network[,4]!=network[,5],]
 					network <<- network
 				  cat(' OK')

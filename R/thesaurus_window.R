@@ -48,7 +48,7 @@ thesaurus_window <- function(f_pos, mainpanel, mainpath) {
 	uniprot <- c()
 	return.parameter <- c()
 
-	panel_para <- gwindow("Construct an ID correspondence file", parent = f_pos, visible = T)
+	panel_para <- gwindow("Construct an ID correspondences file", parent = f_pos, visible = T)
 	pp <- gvbox(container = panel_para)
 	pp$set_borderwidth(10L)
 
@@ -124,7 +124,7 @@ thesaurus_window <- function(f_pos, mainpanel, mainpath) {
 				cat(paste("\n\nOrganism", organism, sep = " : "))
 				cat(paste("\nUniprot file", uniprot, sep = " : "))
 
-				cat("\n\n>BUILDING OF THE ID CORRESPONDENCE FILE  ... ")
+				cat("\n\n>BUILDING OF THE ID CORRESPONDENCES FILE  ... ")
 
 				# Create a directory having the name of the organism
 				organism <- gsub(" ", "-", organism)
@@ -140,7 +140,7 @@ thesaurus_window <- function(f_pos, mainpanel, mainpath) {
 
 				setwd(organism.path)
 
-				# execute thesaurusPy.py (python script)  to create the ID correspondence file
+				# execute thesaurusPy.py (python script)  to create the ID correspondences file
 				path <- paste(system.file(package = "appinetwork"), "thesaurusPy.py", sep = "/")
 				file.copy(path, mainpath)
 				path.copy <- paste(mainpath, "thesaurusPy.py", sep = "/")
@@ -153,8 +153,8 @@ thesaurus_window <- function(f_pos, mainpanel, mainpath) {
 
 				file.remove(path.copy)
 
-				cat("OK\n>the ID correspondence file is done.")
-				cat(paste("\nID correspondence file (output)", sortie, sep = " : "))
+				cat("OK\n>the ID correspondences file is done.")
+				cat(paste("\nID correspondences file (output)", sortie, sep = " : "))
 				cat(paste("\n\n"))
 
 				setwd(mainpath)
@@ -178,7 +178,7 @@ thesaurus_window <- function(f_pos, mainpanel, mainpath) {
 
 		}
 		else {
-			gmessage('Error : Unable to construct the ID correspondence file ', icon = 'error')
+			gmessage('Error : Unable to construct the ID correspondences file ', icon = 'error')
 
 			dispose(ppb)
 			visible(panel_para) <- F
