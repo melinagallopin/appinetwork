@@ -12,7 +12,7 @@ clustering <- function(network, method="TFit") #TODO: any other methods ?
   # Obtain input data
   if (is.character(network))
     network <- load_network(network)
-  if (ncol(network > 2))
+  if (ncol(network) > 2)
     network <- network[,c(1,3)] #extract edges information (only)
   if (!is.matrix(network))
     network <- as.matrix(network)
@@ -30,8 +30,10 @@ clustering <- function(network, method="TFit") #TODO: any other methods ?
   adjacencyMatrix <- matrix(FALSE, nbVertices, nbVertices)
   for (i in 1:nbEdges)
   {
-    integerEdge1 <- integerLabelsList[[ edges[i,1] ]]
-    integerEdge2 <- integerLabelsList[[ edges[i,2] ]]
+    # NOTE: as.character(...) because if labels are integers
+    # R casts edges[i,k] into an int (and reach wrong cell)
+    integerEdge1 <- integerLabelsList[[ as.character(edges[i,1]) ]]
+    integerEdge2 <- integerLabelsList[[ as.character(edges[i,2]) ]]
     adjacencyMatrix[integerEdge1,integerEdge2] <- TRUE
     adjacencyMatrix[integerEdge2,integerEdge1] <- TRUE #symmetric graph
   }
@@ -47,4 +49,29 @@ clustering <- function(network, method="TFit") #TODO: any other methods ?
   for (k in 1:K)
     res[[k]] = labels[partition==k]
   res
+}
+
+#system("R CMD INSTALL ."); reload(".")
+#dataset <- iris[,1:4]
+#k <- 10
+
+# For debug (temp):
+clustData <- function(dataset, k)
+{
+  n <- nrow(dataset)
+  m <- ncol(dataset)
+  D <- as.matrix(dist(dataset))
+  neighbs <- list()
+  for (i in 1:n)
+    neighbs[[i]] <- sort(D[i,], index.return=T)$ix[2:(k+1)]
+  A <- matrix(nrow=0, ncol=2)
+  for (i in 1:n)
+    A <- rbind(A, cbind(i, neighbs[[i]]))
+  cl <- clustering(A)
+  K <- length(cl)
+  colors <- rep(0,n)
+  for (i in 1:K)
+    colors[as.integer(cl[[i]])] <- i
+  colors
+  #plot(dataset[,1], dataset[,3], col=colors)
 }
