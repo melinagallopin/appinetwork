@@ -1,0 +1,40 @@
+aliasA	method	aliasB	uidA	uidB	pmid	taxA	taxB	interactionType	sourceBD	GeneNameA	GeneNameB	NbPmids
+IKI3	-	ELP4	Q06706	Q02884	pubmed:11689709|pubmed:15044803|pubmed:11805826	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	IKI3	ELP4	3
+IKI3	-	ELP6	Q06706	Q04868	pubmed:11689709|pubmed:15044803	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	IKI3	ELP6	2
+IKI3	-	ELP2	Q06706	P42935	pubmed:11689709|pubmed:11805826|pubmed:15044803|pubmed:14718557|pubmed:11929532|pubmed:10777588	-	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	IKI3	ELP2	6
+IKI3	-	ELP3	Q06706	Q02908	pubmed:11689709|pubmed:11805826|pubmed:15044803	-	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	IKI3	ELP3	3
+IKI3	-	IKI1	Q06706	P38874	pubmed:11805826|pubmed:15044803|pubmed:11689709|pubmed:11296232|pubmed:16554755	-	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	IKI3	IKI1	5
+IKI3	MI:0401(biochemical)	SSB2	Q06706	P40150	pubmed:23332755	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	IKI3	SSB2	1
+IKI3	MI:0004(affinity chromatography technology)	KTI12	Q06706	P34253	pubmed:11296232	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	IKI3	KTI12	1
+IKI3	MI:0004(affinity chromatography technology)	KTI11	Q06706	Q3E840	pubmed:12940988	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	IKI3	KTI11	1
+IKI3	MI:0401(biochemical)	RPO21	Q06706	P04050	pubmed:10024884	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	IKI3	RPO21	1
+IKI3	MI:0018(two hybrid)	MFA1	Q06706	P34165	pubmed:11283351	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	mpact	IKI3	MFA1	1
+SSA1	MI:0004(affinity chromatography technology)	IKI3	P10591	Q06706	pubmed:19536198	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	SSA1	IKI3	1
+TAF9	MI:0004(affinity chromatography technology)	IKI3	Q05027	Q06706	pubmed:12052880	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	TAF9	IKI3	1
+ELP2	-	IKI1	P42935	P38874	pubmed:11689709|pubmed:12424236|pubmed:18467557|pubmed:16554755|pubmed:11805826|pubmed:15044803	-	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	ELP2	IKI1	6
+ELP2	-	ELP4	P42935	Q02884	pubmed:11689709|pubmed:11805826|pubmed:15044803	-	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	ELP2	ELP4	3
+ELP2	-	ELP6	P42935	Q04868	pubmed:11689709|pubmed:11904415|pubmed:11390369|pubmed:17200106|pubmed:15044803	-	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	ELP2	ELP6	5
+ELP2	MI:0004(affinity chromatography technology)	RPO21	P42935	P04050	pubmed:12424236	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	ELP2	RPO21	1
+ELP2	MI:0004(affinity chromatography technology)	KTI12	P42935	P34253	pubmed:12139626|pubmed:11929532	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	ELP2	KTI12	2
+KTI11	MI:0004(affinity chromatography technology)	ELP2	Q3E840	P42935	pubmed:12940988	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	KTI11	ELP2	1
+RSF2	MI:0004(affinity chromatography technology)	ELP2	P46974	P42935	pubmed:11805837	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	RSF2	ELP2	1
+ELP3	-	IKI1	Q02908	P38874	pubmed:11689709|pubmed:18467557|pubmed:11805826|pubmed:15044803	-	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	ELP3	IKI1	4
+ELP3	-	ELP4	Q02908	Q02884	pubmed:11689709|pubmed:11805826|pubmed:15044803	-	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	ELP3	ELP4	3
+ELP3	-	ELP6	Q02908	Q04868	pubmed:11689709|pubmed:11435442|pubmed:22343726|pubmed:15044803	-	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	ELP3	ELP6	4
+KTI11	MI:0004(affinity chromatography technology)	ELP3	Q3E840	Q02908	pubmed:12940988	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	KTI11	ELP3	1
+HHT1	MI:0004(affinity chromatography technology)	ELP3	P61830	Q02908	 pubmed:22199229	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	HHT2	ELP3	1
+SSB2	MI:0401(biochemical)	ELP3	P40150	Q02908	pubmed:23332755	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	SSB2	ELP3	1
+ELP4	-	ELP6	Q02884	Q04868	pubmed:11689709|pubmed:15044803	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	ELP4	ELP6	2
+ELP2	-	ELP3	Q02884	P38874	pubmed:17200106|pubmed:11805826|pubmed:11689709|pubmed:15044803|pubmed:11805837|pubmed:22343726|pubmed:15138274	-	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	ELP2	ELP3	7
+ELP4	MI:0004(affinity chromatography technology)	TAF13	Q02884	P11747	pubmed:12052880	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	ELP4	TAF13	1
+SSB2	MI:0401(biochemical)	ELP4	P40150	Q02884	pubmed:23332755	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	SSB2	ELP4	1
+TAF9	MI:0004(affinity chromatography technology)	ELP4	Q05027	Q02884	pubmed:12052880	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	TAF9	ELP4	1
+IKI1	-	ELP6	P38874	Q04868	pubmed:11283351|pubmed:11689709|pubmed:10688190|pubmed:15044803	-	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	IKI1	ELP6	4
+IKI1	MI:0004(affinity chromatography technology)	RPO21	P38874	P04050	pubmed:12424236	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	IKI1	RPO21	1
+IKI1	MI:0004(affinity chromatography technology)	KTI12	P38874	P34253	pubmed:12940988	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	IKI1	KTI12	1
+IKI1	MI:0004(affinity chromatography technology)	HHT1	P38874	P61830	pubmed:22556426	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	IKI1	HHT2	1
+TAF9	MI:0004(affinity chromatography technology)	IKI1	Q05027	P38874	pubmed:12052880	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	TAF9	IKI1	1
+SSB2	MI:0401(biochemical)	IKI1	P40150	P38874	pubmed:23332755	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	SSB2	IKI1	1
+KTI11	MI:0004(affinity chromatography technology)	IKI1	Q3E840	P38874	pubmed:18627462	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	biogrid	KTI11	IKI1	1
+SSB1	MI:0676(tandem affinity purification)	IKI1	P11484	P38874	pubmed:19536198	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	intact	SSB1	IKI1	1
+ELP6	-	TMA10	Q04868	Q06177	pubmed:10655498	taxid:559292(Saccharomyces cerevisiae S288C)	taxid:559292(Saccharomyces cerevisiae S288C)	physical	bind	ELP6	TMA10	1

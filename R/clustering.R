@@ -1,4 +1,4 @@
-#' clustering
+#' Cluster PPI network
 #'
 #' PPI network clustering to identify proteins of a biological process
 #'
@@ -6,8 +6,13 @@
 #' @param method Clustering method (default: "TFit")
 #' @return A list of clusters (using labels of vertices)
 #'
+#' @examples
+#' filename <- system.file("extdata", "network.example", package = "appinetwork")
+#' cl <- clusterNetwork(filename)
+#' cl
+#'
 #' @export
-clustering <- function(network, method="TFit") #TODO: any other methods ?
+clusterNetwork <- function(network, method="TFit") #TODO: any other methods ?
 {
   # Obtain input data
   if (is.character(network))
@@ -51,19 +56,33 @@ clustering <- function(network, method="TFit") #TODO: any other methods ?
   res
 }
 
-#system("R CMD INSTALL ."); reload(".")
-#dataset <- iris[,1:4]
-#k <- 10
-
-# For debug (temp):
-clustData <- function(dataset, k)
+#' Cluster (real) dataset
+#'
+#' Clustering of data based on a distances matrix,
+#' used to first build a neighborhood graph
+#'
+#' @param D n x n distances or dissimilarity matrix (between data rows)
+#' @param k Number of neighbors for each vertex. Default: 0 for adaptive
+#'
+#' @examples
+#' cl <- clustData(iris[,1:4], 12)
+#' plot(iris[,1], iris[,3], col=cl)
+#'
+#' @export
+clusterData <- function(D, k)
 {
-  n <- nrow(dataset)
-  m <- ncol(dataset)
-  D <- as.matrix(dist(dataset))
+  n <- nrow(D)
   neighbs <- list()
-  for (i in 1:n)
-    neighbs[[i]] <- sort(D[i,], index.return=T)$ix[2:(k+1)]
+  if (k <= 0)
+  {
+    # TODO: Which strategy ?
+    # ...
+  }
+  else
+  {
+    for (i in 1:n)
+      neighbs[[i]] <- sort(D[i,], index.return=T)$ix[2:(k+1)]
+  }
   A <- matrix(nrow=0, ncol=2)
   for (i in 1:n)
     A <- rbind(A, cbind(i, neighbs[[i]]))
@@ -73,5 +92,4 @@ clustData <- function(dataset, k)
   for (i in 1:K)
     colors[as.integer(cl[[i]])] <- i
   colors
-  #plot(dataset[,1], dataset[,3], col=colors)
 }
