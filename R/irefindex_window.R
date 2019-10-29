@@ -107,6 +107,20 @@ irefindex_window <- function(f_pos, mainpanel, pana, mainpath) {
 				}
 
 				colnames(Base)[1] <- "uidA"
+				## irefindex
+				## 1 : uidA
+				## 2 : uidB
+				## 5 : aliasA
+				## 6 : aliasB
+				## 7 : Method
+				## 8 : author
+				## 9 : pmids
+				## 10 : taxa
+				## 11 : taxb
+				## 12 : interactionType
+				## 13 : sourcedb
+				## 15 : confidence
+				## 54 : numParticipants
 				Base.f <- Base[,c(1:2,5:13,15,54)]
 				Interactions <- Base.f
 
