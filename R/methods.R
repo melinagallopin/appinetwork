@@ -95,7 +95,127 @@ DataBases<-function(Final.List.Redondant){
   return(Inter.red)
 }
 
+# search_id <- function(cible, thesaurus) {
+# 
+# 
+#   print("test")
+# 
+#   # Recherche de la cible dans tout le thesaurus pour associer le bon UniprotID avec le nom de la proteine et le nom du gene
+# 
+#   # On regarde si la cible peut etre un ID-isoforme pour cherche l'ID seul dans le thesaurus : UniprotID ou OldID
+#   CIBLE <- unlist(strsplit(cible, "-"))
+#   ciblePrincipale <- CIBLE[1]
+#   if (length(CIBLE[]) > 1) {
+#     complementCible <- paste('-', CIBLE[2], sep = '')
+#   }
+#   else {
+#     complementCible <- ""
+#   }
+# 
+#   # On cherche la cible dans la liste des uniprotID du thesaurus : colonne 1
+#   ligneThesaurus <- 1 # on commence à la premiere ligne du thesaurus
+#   ligneMax <- dim(thesaurus)[1]
+#   resultat <- list()
+#   recherche <- 'non'
+#   while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+#     if (ciblePrincipale == thesaurus[ligneThesaurus,1]) {
+#       resultat <- c(paste(thesaurus[ligneThesaurus,1], complementCible, sep = ''), paste(thesaurus[ligneThesaurus,5], complementCible, sep = ''), thesaurus[ligneThesaurus,3])
+#       recherche <- 'oui'
+#     }
+#     else {
+#       ligneThesaurus <- ligneThesaurus + 1
+#     }
+#   }
+#   # Si la cible n'a pas ete trouvee on cherche dans les Protein Name : colonne 5
+#   if (length(resultat) == 0) {
+#     ligneThesaurus <- 1
+#     resultat <- list()
+#     recherche <- 'non'
+#     while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+#       if (cible == thesaurus[ligneThesaurus,5]) {
+#         resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
+#         recherche <- 'oui'
+#       }
+#       else {
+#         ligneThesaurus <- ligneThesaurus + 1
+#       }
+#     }
+#   }
+# 
+#   # Si la cible n'a pas ete trouvee dans les uniprotID on cherche dans les anciens ID : colonne 7
+#   if (length(resultat) == 0) {
+#     ligneThesaurus <- 1
+#     resultat <- list()
+#     recherche <- 'non'
+#     while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+#       test <- grep(ciblePrincipale, thesaurus[ligneThesaurus,7])
+#       if (length(test) != 0) {
+#         resultat <- c(paste(thesaurus[ligneThesaurus,1], complementCible, sep = ''), paste(thesaurus[ligneThesaurus,5], complementCible, sep = ''), thesaurus[ligneThesaurus,3])
+#         recherche <- 'oui'
+#       }
+#       else {
+#         ligneThesaurus <- ligneThesaurus + 1
+#       }
+#     }
+#   }
+# 
+#   # Si la cible n'a pas ete trouvee on cherche dans les Gene ID : colonne 6
+#   if (length(resultat) == 0) {
+#     ligneThesaurus <- 1
+#     resultat <- list()
+#     recherche <- 'non'
+#     while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+#       if (is.na(thesaurus[ligneThesaurus,6]) == FALSE & cible == thesaurus[ligneThesaurus,6]) {
+#         resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
+#         recherche <- 'oui'
+#       }
+#       else {
+#         ligneThesaurus <- ligneThesaurus + 1
+#       }
+#     }
+#   }
+# 
+#   # Si la cible n'a pas ete trouvee on cherche dans les RefSeq : colonne 4
+#   if (length(resultat) == 0) {
+#     ligneThesaurus <- 1
+#     resultat <- list()
+#     recherche <- 'non'
+#     while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+#       if (is.na(thesaurus[ligneThesaurus,4]) == FALSE & cible == thesaurus[ligneThesaurus,4]) {
+#         resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
+#         recherche <- 'oui'
+#       }
+#       else {
+#         ligneThesaurus <- ligneThesaurus + 1
+#       }
+#     }
+#   }
+# 
+# 
+#   # Si la cible n'a pas ete trouvee on cherche dans les Gene Name : colonne 3
+#   if (length(resultat) == 0) {
+#     ligneThesaurus <- 1
+#     resultat <- list()
+#     recherche <- 'non'
+#     while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+#       if (cible == thesaurus[ligneThesaurus,3]) {
+#         resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
+#         recherche <- 'oui'
+#       }
+#       else {
+#         ligneThesaurus <- ligneThesaurus + 1
+#       }
+#     }
+#   }
+# 
+#   return (resultat)
+# 
+# }
+
+
 search_id <- function(cible, thesaurus) {
+  
+  
   
   # Recherche de la cible dans tout le thesaurus pour associer le bon UniprotID avec le nom de la proteine et le nom du gene
   
@@ -114,114 +234,154 @@ search_id <- function(cible, thesaurus) {
   ligneMax <- dim(thesaurus)[1]
   resultat <- list()
   recherche <- 'non'
-  while (recherche == 'non' & ligneThesaurus <= ligneMax) {
-    if (ciblePrincipale == thesaurus[ligneThesaurus,1]) {
-      resultat <- c(paste(thesaurus[ligneThesaurus,1], complementCible, sep = ''), paste(thesaurus[ligneThesaurus,5], complementCible, sep = ''), thesaurus[ligneThesaurus,3])
-      recherche <- 'oui'
-    }
-    else {
-      ligneThesaurus <- ligneThesaurus + 1
-    }
-  }
+  # while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+  #   if (ciblePrincipale == thesaurus[ligneThesaurus,1]) {
+  #     resultat <- c(paste(thesaurus[ligneThesaurus,1], complementCible, sep = ''), paste(thesaurus[ligneThesaurus,5], complementCible, sep = ''), thesaurus[ligneThesaurus,3])
+  #     recherche <- 'oui'
+  #   }
+  #   else {
+  #     ligneThesaurus <- ligneThesaurus + 1
+  #   }
+  # }
   
-  # Si la cible n'a pas ete trouvee dans les uniprotID on cherche dans les anciens ID : colonne 7
-  if (length(resultat) == 0) {
-    ligneThesaurus <- 1
-    resultat <- list()
-    recherche <- 'non'
-    while (recherche == 'non' & ligneThesaurus <= ligneMax) {
-      test <- grep(ciblePrincipale, thesaurus[ligneThesaurus,7])
-      if (length(test) != 0) {
-        resultat <- c(paste(thesaurus[ligneThesaurus,1], complementCible, sep = ''), paste(thesaurus[ligneThesaurus,5], complementCible, sep = ''), thesaurus[ligneThesaurus,3])
-        recherche <- 'oui'
-      }
-      else {
-        ligneThesaurus <- ligneThesaurus + 1
-      }
-    }
-  }
+  resultat = grep(pattern = ciblePrincipale, x = thesaurus[,1])
   
-  # Si la cible n'a pas ete trouvee on cherche dans les Gene ID : colonne 6
-  if (length(resultat) == 0) {
-    ligneThesaurus <- 1
-    resultat <- list()
-    recherche <- 'non'
-    while (recherche == 'non' & ligneThesaurus <= ligneMax) {
-      if (is.na(thesaurus[ligneThesaurus,6]) == FALSE & cible == thesaurus[ligneThesaurus,6]) {
-        resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
-        recherche <- 'oui'
-      }
-      else {
-        ligneThesaurus <- ligneThesaurus + 1
+  if (length(resultat) != 0) {
+    resultat = c(thesaurus[resultat,1], thesaurus[resultat,5], thesaurus[resultat,3])
+  } else {
+    resultat = grep(pattern = ciblePrincipale, x = thesaurus[,5])
+    if (length(resultat) != 0) {
+      resultat = c(thesaurus[resultat,1], thesaurus[resultat,5], thesaurus[resultat,3])
+    } else {
+      resultat = grep(pattern = ciblePrincipale, x = thesaurus[,7])
+      if (length(resultat) != 0) {
+        resultat = c(paste(thesaurus[resultat,1], complementCible, sep = ''), paste(thesaurus[resultat,5], complementCible, sep = ''), thesaurus[resultat,3])
+      } else {
+        resultat = grep(pattern = ciblePrincipale, x = thesaurus[,6])
+        if (length(resultat) != 0) {
+          resultat = c(thesaurus[resultat,1], thesaurus[resultat,5], thesaurus[resultat,3])
+        } else {
+          resultat = grep(pattern = ciblePrincipale, x = thesaurus[,4])
+          if (length(resultat) != 0) {
+            resultat = c(thesaurus[resultat,1], thesaurus[resultat,5], thesaurus[resultat,3])
+          } else {
+            resultat = grep(pattern = ciblePrincipale, x = thesaurus[,3])
+            if (length(resultat) != 0) {
+              resultat = c(thesaurus[resultat,1], thesaurus[resultat,5], thesaurus[resultat,3])
+            }
+          }
+        }
       }
     }
   }
-  
-  # Si la cible n'a pas ete trouvee on cherche dans les RefSeq : colonne 4
-  if (length(resultat) == 0) {
-    ligneThesaurus <- 1
-    resultat <- list()
-    recherche <- 'non'
-    while (recherche == 'non' & ligneThesaurus <= ligneMax) {
-      if (is.na(thesaurus[ligneThesaurus,4]) == FALSE & cible == thesaurus[ligneThesaurus,4]) {
-        resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
-        recherche <- 'oui'
-      }
-      else {
-        ligneThesaurus <- ligneThesaurus + 1
-      }
-    }
+     
+  # 
+  # # Si la cible n'a pas ete trouvee on cherche dans les Protein Name : colonne 5
+  # if (length(resultat) == 0) {
+  #   ligneThesaurus <- 1
+  #   resultat <- list()
+  #   recherche <- 'non'
+  #   while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+  #     if (cible == thesaurus[ligneThesaurus,5]) {
+  #       resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
+  #       recherche <- 'oui'
+  #     }
+  #     else {
+  #       ligneThesaurus <- ligneThesaurus + 1
+  #     }
+  #   }
+  # }
+  # 
+  # # Si la cible n'a pas ete trouvee dans les uniprotID on cherche dans les anciens ID : colonne 7
+  # if (length(resultat) == 0) {
+  #   ligneThesaurus <- 1
+  #   resultat <- list()
+  #   recherche <- 'non'
+  #   while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+  #     test <- grep(ciblePrincipale, thesaurus[ligneThesaurus,7])
+  #     if (length(test) != 0) {
+  #       resultat <- c(paste(thesaurus[ligneThesaurus,1], complementCible, sep = ''), paste(thesaurus[ligneThesaurus,5], complementCible, sep = ''), thesaurus[ligneThesaurus,3])
+  #       recherche <- 'oui'
+  #     }
+  #     else {
+  #       ligneThesaurus <- ligneThesaurus + 1
+  #     }
+  #   }
+  # }
+  # 
+  # # Si la cible n'a pas ete trouvee on cherche dans les Gene ID : colonne 6
+  # if (length(resultat) == 0) {
+  #   ligneThesaurus <- 1
+  #   resultat <- list()
+  #   recherche <- 'non'
+  #   while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+  #     if (is.na(thesaurus[ligneThesaurus,6]) == FALSE & cible == thesaurus[ligneThesaurus,6]) {
+  #       resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
+  #       recherche <- 'oui'
+  #     }
+  #     else {
+  #       ligneThesaurus <- ligneThesaurus + 1
+  #     }
+  #   }
+  # }
+  # 
+  # # Si la cible n'a pas ete trouvee on cherche dans les RefSeq : colonne 4
+  # if (length(resultat) == 0) {
+  #   ligneThesaurus <- 1
+  #   resultat <- list()
+  #   recherche <- 'non'
+  #   while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+  #     if (is.na(thesaurus[ligneThesaurus,4]) == FALSE & cible == thesaurus[ligneThesaurus,4]) {
+  #       resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
+  #       recherche <- 'oui'
+  #     }
+  #     else {
+  #       ligneThesaurus <- ligneThesaurus + 1
+  #     }
+  #   }
+  # }
+  # 
+  #   
+  #   # Si la cible n'a pas ete trouvee on cherche dans les Gene Name : colonne 3
+  #   if (length(resultat) == 0) {
+  #     ligneThesaurus <- 1
+  #     resultat <- list()
+  #     recherche <- 'non'
+  #     while (recherche == 'non' & ligneThesaurus <= ligneMax) {
+  #       if (cible == thesaurus[ligneThesaurus,3]) {
+  #         resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
+  #         recherche <- 'oui'
+  #       }
+  #       else {
+  #         ligneThesaurus <- ligneThesaurus + 1
+  #       }
+  #     }
+  #   }
+  #   
+    return (resultat)
+
   }
-  
-  # Si la cible n'a pas ete trouvee on cherche dans les Protein Name : colonne 5
-  if (length(resultat) == 0) {
-    ligneThesaurus <- 1
-    resultat <- list()
-    recherche <- 'non'
-    while (recherche == 'non' & ligneThesaurus <= ligneMax) {
-      if (cible == thesaurus[ligneThesaurus,5]) {
-        resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
-        recherche <- 'oui'
-      }
-      else {
-        ligneThesaurus <- ligneThesaurus + 1
-      }
-    }
-  }
-  
-  # Si la cible n'a pas ete trouvee on cherche dans les Gene Name : colonne 3
-  if (length(resultat) == 0) {
-    ligneThesaurus <- 1
-    resultat <- list()
-    recherche <- 'non'
-    while (recherche == 'non' & ligneThesaurus <= ligneMax) {
-      if (cible == thesaurus[ligneThesaurus,3]) {
-        resultat <- c(thesaurus[ligneThesaurus,1], thesaurus[ligneThesaurus,5], thesaurus[ligneThesaurus,3])
-        recherche <- 'oui'
-      }
-      else {
-        ligneThesaurus <- ligneThesaurus + 1
-      }
-    }
-  }
-  
-  return (resultat)
-  
-}
+
+
 
 ############################################################################################
 
 recup_ppi <- function(inputListFile, Base) {
+
   
   # Recuperation des colonnes des bases qui sont utilisees dans le reseau
   Base.f <- as.matrix(Base[,c(1:5,7:11,14:15)])
+  
+  
   ind <- unique(c(as.vector(grep(inputListFile[1], Base.f[,1])), as.vector(grep(inputListFile[1], Base.f[,2]))))
+
   
   cat('\n>Searching interactions...')
   
   # Recherche des interactions dans les bases, contenant au moins une proteine du fichier de recherche input list
   for (i in 1:length(inputListFile)) {
-    ind <- unique(c(ind, c(as.vector(grep(inputListFile[i], Base.f[,1])), as.vector(grep(inputListFile[i], Base.f[,2])))))
+    input_name = paste("^",inputListFile[i],"$", sep = "")
+    ind <- unique(c(ind, c(as.vector(grep(input_name, Base.f[,1])), as.vector(grep(input_name, Base.f[,2])))))
   }
   interaction.dir <- Base.f[ind,]
   
@@ -230,6 +390,7 @@ recup_ppi <- function(inputListFile, Base) {
   return(interaction.dir)
   
 }
+
 
 ############################################################################################
 
@@ -971,10 +1132,18 @@ cherche_uniprotID<-function(data_i,data,thesaurus){
     data_i[1] <- Proteine
     data_i[11] <- Gene
   }
-  v1<-c(grep(data_i[11],data[,11]))
-  v2<-c(grep(data_i[11],data[,12]))
+  v1<-c(grep(paste("^",data_i[11],"$",sep = ""),data[,11]))
+  v2<-c(grep(paste("^",data_i[11],"$",sep = ""),data[,12]))
   if((length(unique(c(data[v1,4],data[v2,5])))>1)||(length(resultatA) != 3))
-  {
+  { 
+    # print(resultatA)
+    # print(unique(c(data[v1,4],data[v2,5])))
+    # print("||||||||||")
+    # print(data_i)
+    # print("||||||||||2")
+
+    # print(v1)
+    # print(v2)
     # On recupere les identifiants que le thesaurus ne sait pas remplacer tout seul
     not_found <- data_i[c(4,1,11)]
     nf<<-rbind(nf, not_found)
@@ -991,10 +1160,19 @@ cherche_uniprotID<-function(data_i,data,thesaurus){
     data_i[3] <- Proteine
     data_i[12] <- Gene
   }
-  v3<-c(grep(data_i[12],data[,11]))
-  v4<-c(grep(data_i[12],data[,12]))
+  v3<-c(grep(paste("^",data_i[12],"$",sep = ""),data[,11]))
+  v4<-c(grep(paste("^",data_i[12],"$",sep = ""),data[,12]))
   if((length(unique(c(data[v3,4],data[v4,5])))>1)||(length(resultatB) != 3))
   {
+    # print(resultatB)
+    # print(unique(c(data[v3,4],data[v4,5])))
+    # print("||||||||||")
+    # print(data_i)
+    # print("||||||||||2")
+
+    # print(v3)
+    # 
+    # print(v4)
     # On recupere les identifiants que le thesaurus ne sait pas remplacer tout seul
     not_found <- data_i[c(5,3,12)]
     nf <<- rbind(nf, not_found)

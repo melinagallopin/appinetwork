@@ -44,6 +44,21 @@ for i in fichier :
 
 	i = i.strip("\n")
 
+	# Recuperation du nom principal de la proteine (29, 30-37)
+	if i[0:2] == "ID" :
+		
+		review_state = i[29:39]
+
+		NameProt = re.search(r"(ID)(\s)*(?P<id>\w+)(_)", i)
+		if NameProt is not None:
+			NameProt = NameProt.group('id')
+			NameProt = str(NameProt)
+		else :
+			NameProt = 'NA'
+
+	if review_state == "Unreviewed" :
+		continue
+
 	# Recuperation de l'identifiant uniprot de la proteine et de ses anciens ID
 	if i[0:2] == "AC" :
 		if ID == "NA" :
@@ -68,14 +83,7 @@ for i in fichier :
 				for j in range(0, len(liste)) :
 					Iso = Iso + liste[j]
 
-	# Recuperation du nom principal de la proteine
-	if i[0:2] == "ID" :
-		NameProt = re.search(r"(ID)(\s)*(?P<id>\w+)(_)", i)
-		if NameProt is not None:
-			NameProt = NameProt.group('id')
-			NameProt = str(NameProt)
-		else :
-			NameProt = 'NA'
+
 
 	# Recuperation de la reference du locus (NP)
 	elif i[0:12] == "DR   RefSeq;" :
@@ -213,14 +221,6 @@ for i in fichier :
 				if ORF is not None:
 					ORF = ORF.group('ug')
 					ORF = 'rno:' + str(ORF)
-				else :
-					ORF = 'NA'
-		if organism == "arabidopsis+thaliana" :
-			if ORF == 'NA' :
-				ORF = re.search(r"(ath:)(?P<ug>\S+)(;)", i)
-				if ORF is not None:
-					ORF = ORF.group('ug')
-					ORF = 'ath:' + str(ORF)
 				else :
 					ORF = 'NA'
 		#if organism == "escherichia+coli" :
@@ -411,7 +411,24 @@ for i in fichier :
 							ORF = ORF.replace(sup, "")
 					else :
 						orfs = 'NA'
-			
+		if organism == "arabidopsis+thaliana" :
+			if ORF == "NA" :
+				ligneORF = i.split(";")
+				for k in ligneORF :
+					k = k.replace(" ","")
+					k = k.split("{")[0]
+					orfs = re.search(r"(.)*(OrderedLocusNames=)(?P<orf>\S+)$", k)
+					if orfs is not None:
+						ORF = orfs.group('orf')
+						ORF = str(ORF)
+						ORF = ORF.upper()
+						sup = re.search(r"({)(?P<SUP>\S+)(})", ORF)
+						if sup is not None :
+							sup = sup.group('SUP')
+							sup = '{' + sup + '}'
+							ORF = ORF.replace(sup, "")
+					else :
+						orfs = 'NA'
 		# Recuperation du nom du gene
 		if Name == "NA" :
 			ligneName = i.split(";")
